@@ -2,7 +2,7 @@
 
 **Version:** 1.0
 **Date:** May 16, 2025
-**Author:** [Your Name]
+**Author:** William Stephen
 
 ## 1. Project Goal
 
