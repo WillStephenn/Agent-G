@@ -13,7 +13,7 @@ To create a WhatsApp-based AI assistant that help the family navigate and unders
 ### 2.1. Handwriting Transcription
 * **Input:** Transcription of photos of handwritten pages from notebooks. Sensitive information on pages will be physically covered with a slip of paper simply stating "REDACTED" before photography.
 * **Process:**
-    * Use the Gemini API to perform transcriptions from handwriting image to tagged text.
+    * Use the Gemini Pro model ("gemini-2.5-pro-preview-05-06") to perform transcriptions from handwriting image to tagged text.
     * **Typo Correction & Original Text Preservation:**
         * The Gemini API will be instructed: "If you encounter obvious spelling errors or typos, please correct them in the main transcription. For each correction made, preserve the original as-transcribed word/phrase immediately after the corrected text, encapsulated within an XML-style tag: `<original_text>original uncorrected text</original_text>`."
         * Example output: "He went to the store `<original_text>stor</original_text>` to buy bread `<original_text> bred </original_text>`."
@@ -27,6 +27,11 @@ To create a WhatsApp-based AI assistant that help the family navigate and unders
 
 ### 2.2. Conversational AI Agent
 * **Engine:** Gemini API.
+* **Model Selection Strategy:**
+    * **Primary Model:** "gemini-2.5-pro-preview-05-06" (highest quality responses)
+    * **Fallback Model:** "gemini-2.5-flash-preview-04-17" (used when rate limits are hit)
+    * **Cooldown Period:** If rate limit is hit on Pro model, system will switch to Flash model and implement a 6-hour cooldown before attempting to use Pro again
+    * **Model Tracking:** System will maintain a timestamp of the last rate limit hit to enforce the cooldown period
 * **Personality & Tone:**
     * Kind, patient, and empathetic.
     * Supportive and positive outlook.
@@ -69,6 +74,9 @@ To create a WhatsApp-based AI assistant that help the family navigate and unders
 * **Programming Language:** Python (Version 3.x)
 * **AI Services:**
     * **Google Gemini API:** (Transcription and Conversational AI)
+        * Primary model: "gemini-2.5-pro-preview-05-06"
+        * Fallback model: "gemini-2.5-flash-preview-04-17"
+        * Model fallback logic with 6-hour cooldown implemented in the backend
 * **Security & Encryption (Local Data):**
     * Operational data like whitelists, user profiles, system prompts, conversation logs, should be stored as files (and not be contained within the python script) and should be protected.
     * `cryptography` library for file encryption if local storage of these operational files is needed.
@@ -81,6 +89,7 @@ To create a WhatsApp-based AI assistant that help the family navigate and unders
 * **Key Python Libraries/Frameworks:**
     * `twilio`, `google-generativeai`, `Flask` (or `FastAPI`), `requests`, `python-dotenv`.
     * `os` (for filename parsing), `re` (for parsing tags if needed).
+    * `datetime` (for tracking model cooldown periods)
 
 ## 4. Security Measures
 
