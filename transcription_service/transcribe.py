@@ -17,8 +17,12 @@ if not GEMINI_API_KEY:
     exit()
 genai.configure(api_key=GEMINI_API_KEY)
 
-# Define the Gemini model to be used
-transcription_model = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
+# Define the Gemini model and config to be used
+TRANSCRIPTION_TEMPERATURE = 0.7
+transcription_model = genai.GenerativeModel(
+    "gemini-2.5-flash-preview-04-17",
+    generation_config=genai.types.GenerationConfig(temperature=TRANSCRIPTION_TEMPERATURE)
+)
 
 # Directories
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,7 +41,9 @@ Follow these specific instructions carefully:
     *   Example: "He went to the store `<original_text>stor</original_text>` to buy bread `<original_text> bred </original_text>`."
 3.  Redacted Information Handling:** If you encounter the word 'REDACTED' (transcribed from a physical cover slip in the image), transcribe it, but also encapsulate this specific word 'REDACTED' within an XML-style tag: `<redacted_marker/>`.
     *   Example: "...Password: <redacted_marker/>..."
-4.  Output Format: Provide only the transcribed text with the specified XML tags. Do not include any other commentary or preamble.
+4.  Merged Word Handling:** If you identify words that have been incorrectly merged (e.g., "bookkeeper" instead of "book keeper"), please split them into their correct constituent words in the main transcription. For each such correction, preserve the original merged word immediately after the corrected (split) text, encapsulated within an XML-style tag: `<original_text>original merged word</original_text>`.
+    *   Example: "Contact the book keeper `<original_text>bookkeeper</original_text>` for details."
+5.  Output Format: Provide only the transcribed text with the specified XML tags. Do not include any other commentary or preamble.
 """
 
 def sanitise_filename_component(name_part: str) -> str:

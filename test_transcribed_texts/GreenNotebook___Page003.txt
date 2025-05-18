@@ -1,1 +1,2 @@
-The Wifi is called "SkY 01233911", and the password is: <redacted_marker/> ,
+The Wifi is called "Sky 01233911", and
+the password is: REDACTED<redacted_marker/>,
