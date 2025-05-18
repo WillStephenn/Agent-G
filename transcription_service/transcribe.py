@@ -13,7 +13,7 @@ dotenv.load_dotenv()
 # Configure the Gemini API
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
-    print("Error: GEMINI_API_KEY not found in environment variables. Please set it in the .env file.")
+    print("Error: GEMINI_API_KEY not found in .env.")
     exit()
 genai.configure(api_key=GEMINI_API_KEY)
 
@@ -32,21 +32,36 @@ TRANSCRIPTION_PROMPT = """Your task is to transcribe the handwritten text from t
 
 Follow these specific instructions carefully:
 
-1.  **Accuracy:** Transcribe the text as accurately as possible.
-2.  **Typo Correction & Original Text Preservation:** If you encounter obvious spelling errors or typos, please correct them in the main transcription. For each correction made, preserve the original as-transcribed word/phrase immediately after the corrected text, encapsulated within an XML-style tag: `<original_text>original uncorrected text</original_text>`.
+1.  Accuracy: Transcribe the text as accurately as possible.
+2.  Typo Correction & Original Text Preservation:** If you encounter obvious spelling errors or typos, please correct them in the main transcription. For each correction made, preserve the original as-transcribed word/phrase immediately after the corrected text, encapsulated within an XML-style tag: `<original_text>original uncorrected text</original_text>`.
     *   Example: "He went to the store `<original_text>stor</original_text>` to buy bread `<original_text> bred </original_text>`."
-3.  **Redacted Information Handling:** If you encounter the word 'REDACTED' (transcribed from a physical cover slip in the image), transcribe it, but also encapsulate this specific word 'REDACTED' within an XML-style tag: `<redacted_marker/>`.
+3.  Redacted Information Handling:** If you encounter the word 'REDACTED' (transcribed from a physical cover slip in the image), transcribe it, but also encapsulate this specific word 'REDACTED' within an XML-style tag: `<redacted_marker/>`.
     *   Example: "...Password: <redacted_marker/>..."
-4.  **Output Format:** Provide only the transcribed text with the specified XML tags. Do not include any other commentary or preamble.
+4.  Output Format: Provide only the transcribed text with the specified XML tags. Do not include any other commentary or preamble.
 """
 
-def sanitize_filename_component(name_part):
-    """Removes problematic characters for filenames."""
-    return re.sub(r'[\/*?:"<>|]', "", name_part)
+def sanitise_filename_component(name_part: str) -> str:
+    """
+    Removes problematic characters for filenames, including brackets.
 
-def transcribe_image(image_path):
+    Args:
+        name_part (str): The string to sanitise.
+
+    Returns:
+        str: The sanitised string.
+    """
+    return str(re.sub(r'[\\/*?:"<>|\[\]]', "", name_part))
+
+def transcribe_image(image_path: str, transcribed_texts_dir: str = TRANSCRIBED_TEXTS_DIR) -> None:
     """
     Transcribes a single image using Gemini API and saves the result.
+
+    Args:
+        image_path (str): The absolute path to the image file.
+        transcribed_texts_dir (str): Directory to save the transcription. Defaults to TRANSCRIBED_TEXTS_DIR.
+
+    Returns:
+        None
     """
     try:
         print(f"Processing image: {image_path}...")
@@ -69,14 +84,11 @@ def transcribe_image(image_path):
             print(f"Warning: Could not parse NotebookIdentifier and PageNumber from filename: {filename}. Skipping.")
             return
 
-        # Clean notebook_identifier and page_number_str by removing brackets
-        cleaned_notebook_identifier = parts[0].replace('[', '').replace(']', '')
-        cleaned_page_number_str = parts[1].replace('[', '').replace(']', '')
+        # Clean notebook_identifier and page_number_str using sanitise_filename_component
+        notebook_identifier = sanitise_filename_component(parts[0])
+        page_number_str = sanitise_filename_component(parts[1])
 
-        notebook_identifier = sanitize_filename_component(cleaned_notebook_identifier)
-        # Ensure page_number_str is the cleaned version for isdigit() check and int conversion
-        page_number_str = sanitize_filename_component(cleaned_page_number_str) 
-
+        # Validate notebook_identifier and page_number_str
         if not notebook_identifier or not page_number_str.isdigit():
             print(f"Warning: Invalid NotebookIdentifier or PageNumber from filename: {filename} (Parsed: '{notebook_identifier}', '{page_number_str}'). Skipping.")
             return
@@ -97,7 +109,7 @@ def transcribe_image(image_path):
         # Output filename convention: [NotebookIdentifier]___[PageNumber].txt
         # Zero-padding page numbers for consistent sorting (e.g., Page023)
         output_filename = f"{notebook_identifier}___Page{page_number:03d}.txt"
-        output_filepath = os.path.join(TRANSCRIBED_TEXTS_DIR, output_filename)
+        output_filepath = os.path.join(transcribed_texts_dir, output_filename)
 
         with open(output_filepath, "w", encoding="utf-8") as f:
             f.write(transcribed_text)
@@ -106,26 +118,51 @@ def transcribe_image(image_path):
     except Exception as e:
         print(f"  An error occurred during transcription or saving for {image_path}: {e}")
 
-def main():
-    print("Starting transcription process...")
-    print(f"Looking for images in: {PICTURES_DIR}")
-    print(f"Saving transcriptions to: {TRANSCRIBED_TEXTS_DIR}")
+def process_images(pictures_dir: str = PICTURES_DIR, transcribed_texts_dir: str = TRANSCRIBED_TEXTS_DIR) -> None:
+    """
+    Processes all images in the specified directory, transcribes them, and saves the results.
 
-    if not os.path.exists(PICTURES_DIR):
-        print(f"Error: Pictures directory not found at {PICTURES_DIR}. Please create it and add images.")
+    Args:
+        pictures_dir (str): Directory containing images to transcribe. Defaults to PICTURES_DIR.
+        transcribed_texts_dir (str): Directory to save transcriptions. Defaults to TRANSCRIBED_TEXTS_DIR.
+
+    Returns:
+        None
+    """
+    print("Starting transcription process...")
+    print(f"Looking for images in: {pictures_dir}")
+    print(f"Saving transcriptions to: {transcribed_texts_dir}")
+
+    if not os.path.exists(pictures_dir):
+        print(f"Error: Pictures directory not found at {pictures_dir}. Please create it and add images.")
         return
 
     processed_files = 0
-    for filename in os.listdir(PICTURES_DIR):
+    for filename in os.listdir(pictures_dir):
         if filename.lower().endswith((".png", ".jpg", ".jpeg", ".heic", ".webp")):
-            image_path = os.path.join(PICTURES_DIR, filename)
-            transcribe_image(image_path)
-            processed_files +=1
-    
+            image_path = os.path.join(pictures_dir, filename)
+            transcribe_image(image_path, transcribed_texts_dir)
+            processed_files += 1
+
     if processed_files == 0:
-        print(f"No image files found in {PICTURES_DIR}. Please add images (e.g., .jpg, .png).")
+        print(f"No image files found in {pictures_dir}. Please add images (e.g., .jpg, .png).")
     else:
         print(f"Transcription process completed. Processed {processed_files} image(s).")
+
+def main() -> None:
+    """
+    Main function to orchestrate the transcription process.
+
+    Reads images from the PICTURES_DIR, transcribes them using transcribe_image,
+    and saves the transcriptions to TRANSCRIBED_TEXTS_DIR.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    process_images()
 
 if __name__ == "__main__":
     main()

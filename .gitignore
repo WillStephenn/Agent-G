@@ -122,3 +122,6 @@ dmypy.json
 .pyre/
 
 .DS_Store
+
+# Copilot Instructions
+Copilot Instructions.md
