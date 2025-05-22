@@ -98,10 +98,11 @@ celerybeat.pid
 .env
 .venv
 env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+
+# Agent-G specific ignores
+agent_cli/system_prompt.md
+user_profiles/*
+!user_profiles/test_user.json
 
 # Spyder project settings
 .spyderproject
