@@ -1,195 +1,291 @@
+/* Classic Macintosh System 1 inspired styling */
 html, body {
     height: 100%;
     margin: 0;
-    padding: 0; /* Added to ensure no default padding interferes */
-    font-family: sans-serif; /* Moved from body to here for consistency */
-    background-color: #f4f4f4; /* Moved from body to here */
-    color: #333; /* Moved from body to here */
+    padding: 0;
+    font-family: 'Chicago', 'Monaco', 'Courier New', monospace;
+    background: #C0C0C0; /* Classic Mac gray background */
+    color: #000;
+    font-size: 12px;
+    line-height: 1.2;
 }
 
-.container {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    width: 90%;
-    max-width: 1200px;
-    margin: 20px auto;
+/* Add desktop pattern */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 1px 1px, #808080 1px, transparent 0),
+        #C0C0C0;
+    background-size: 4px 4px;
+    z-index: -1;
+}
 
-    display: flex; /* Added */
-    flex-direction: column; /* Added */
-    min-height: calc(100vh - 40px); /* Added for viewport height minus margins */
-    box-sizing: border-box; /* Added/Ensured */
+/* Main window container */
+.container {
+    background-color: #FFFFFF;
+    border: 2px solid #000;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 800px;
+    min-height: calc(100vh - 60px);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 2px 2px 0px #808080;
+}
+
+/* Classic Mac window title bar */
+.container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: repeating-linear-gradient(
+        to right,
+        #000 0px,
+        #000 1px,
+        #FFF 1px,
+        #FFF 2px
+    );
+    border-bottom: 1px solid #000;
+    z-index: 1;
+}
+
+/* Close button (decorative) */
+.container::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    width: 8px;
+    height: 8px;
+    background: #FFF;
+    border: 1px solid #000;
+    z-index: 2;
+}
+
+/* Window content area */
+.container > * {
+    margin-top: 25px; /* Account for title bar */
+    padding: 0 15px;
+}
+
+.container > *:first-child {
+    margin-top: 35px; /* Extra space for first element */
 }
 
 h1 {
-    color: #333;
+    color: #000;
     text-align: center;
-    margin-bottom: 20px;
+    margin: 0 0 20px 0;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
+h2 {
+    color: #000;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 15px 0 10px 0;
+    text-transform: uppercase;
+}
+
+h3 {
+    color: #000;
+    font-size: 11px;
+    font-weight: bold;
+    margin: 10px 0 5px 0;
+}
+
+/* Classic Mac button styling */
+.btn, .btn-secondary, .btn-nav, a {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #FFFFFF;
+    color: #000;
+    text-decoration: none;
+    border: 2px solid #000;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 2px;
+    box-shadow: 1px 1px 0px #808080;
+    transition: all 0.1s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn:hover, .btn-secondary:hover, .btn-nav:hover, a:hover {
+    background: #000;
+    color: #FFF;
+    box-shadow: inset 1px 1px 0px #808080;
+}
+
+.btn:active, .btn-secondary:active, .btn-nav:active, a:active {
+    box-shadow: inset 2px 2px 0px #808080;
+    transform: translate(1px, 1px);
+}
+
+/* Content display areas */
 .prompt-content {
-    background-color: #e9e9e9;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    /* word-wrap: break-word; */
-    /* white-space: pre-wrap; */
-    flex-grow: 1; /* Added */
-    display: flex; /* Added */
-    flex-direction: column; /* Added */
+    background: #FFFFFF;
+    border: 2px inset #C0C0C0;
+    padding: 10px;
+    margin: 15px 0;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 10px;
+    line-height: 1.3;
 }
 
-pre {
-    margin: 0;
-    font-family: monospace;
-    font-size: 1em;
-}
-
-/* Add specific styling for pre within prompt-content for wrapping */
 .prompt-content pre {
     white-space: pre-wrap;
     overflow-wrap: break-word;
-    /* word-break: break-all; */
-    font-family: monospace; /* Ensured */
-    font-size: 1em; /* Ensured */
-    flex-grow: 1; /* Added */
-    min-height: 200px; /* Added as a baseline */
-    overflow-y: auto; /* Added for scrolling if needed */
+    font-family: inherit;
+    font-size: inherit;
+    margin: 0;
+    flex-grow: 1;
+    min-height: 200px;
+    overflow-y: auto;
 }
 
-a {
-    display: inline-block;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+/* Enhanced classic scrollbar styling */
+.prompt-content pre::-webkit-scrollbar,
+pre.notebook-content::-webkit-scrollbar,
+textarea::-webkit-scrollbar {
+    width: 16px;
 }
 
-a:hover {
-    background-color: #0056b3;
+.prompt-content pre::-webkit-scrollbar-track,
+pre.notebook-content::-webkit-scrollbar-track,
+textarea::-webkit-scrollbar-track {
+    background: #C0C0C0;
+    border: 1px solid #000;
+    border-radius: 0;
 }
 
-/* Styles for form elements */
-form { /* Added for edit page form */
+.prompt-content pre::-webkit-scrollbar-thumb,
+pre.notebook-content::-webkit-scrollbar-thumb,
+textarea::-webkit-scrollbar-thumb {
+    background: #808080;
+    border: 1px solid #000;
+    border-radius: 0;
+}
+
+.prompt-content pre::-webkit-scrollbar-thumb:hover,
+pre.notebook-content::-webkit-scrollbar-thumb:hover,
+textarea::-webkit-scrollbar-thumb:hover {
+    background: #606060;
+}
+
+.prompt-content pre::-webkit-scrollbar-corner,
+pre.notebook-content::-webkit-scrollbar-corner,
+textarea::-webkit-scrollbar-corner {
+    background: #C0C0C0;
+}
+
+/* Selection styling */
+::selection {
+    background: #000;
+    color: #FFF;
+}
+
+::-moz-selection {
+    background: #000;
+    color: #FFF;
+}
+
+/* Loading animation for classic feel */
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Add classic Mac cursor effects */
+.btn:active, .btn-secondary:active, .btn-nav:active, a:active,
+ul li:active, textarea:focus {
+    cursor: crosshair;
+}
+
+/* Additional typography for authenticity */
+p {
+    font-size: 11px;
+    line-height: 1.4;
+    margin: 10px 0;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+        margin: 10px auto;
+        min-height: calc(100vh - 20px);
+    }
+    
+    .btn, .btn-secondary, .btn-nav, a {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+    
+    textarea {
+        font-size: 9px;
+    }
+}
+
+/* Form elements in classic Mac style */
+form {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 0 15px 15px 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
 }
 
-textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    /* min-height: 500px; */ /* Replaced by flex-grow and smaller min-height */
-    font-family: monospace;
-    font-size: 0.95em;
-    flex-grow: 1; /* Added */
-    min-height: 200px; /* Added as a baseline */
-}
-
-.form-group { /* Ensured it's flexible */
-    margin-bottom: 20px;
-    display: flex; /* Added */
-    flex-direction: column; /* Added */
-    flex-grow: 1; /* Added */
-}
-
 label {
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
     font-weight: bold;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.btn {
-    display: inline-block;
-    padding: 10px 15px;
-    background-color: #28a745; /* Green for primary action (Save) */
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-right: 10px; /* Space between buttons */
+textarea {
+    width: 100%;
+    padding: 8px;
+    border: 2px inset #C0C0C0;
+    background: #FFFFFF;
+    box-sizing: border-box;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 10px;
+    line-height: 1.3;
+    flex-grow: 1;
+    min-height: 400px;
+    height: 60vh;
+    resize: vertical;
+    overflow-y: auto;
 }
 
-.btn:hover {
-    background-color: #218838;
-}
-
-.btn-secondary {
-    background-color: #007bff; /* Blue for secondary actions (Cancel, Back) */
-    /* Inherits other .btn styles if also given class .btn, or define them here */
-}
-
-.btn-secondary:hover {
-    background-color: #0056b3;
-}
-
-/* Ensure general links (<a> tags not styled as buttons) are distinguishable */
-/* For example, if you have simple <a> links for navigation elsewhere */
-/* a.standard-link {
-    color: #007bff;
-    text-decoration: underline;
-}
-
-a.standard-link:hover {
-    color: #0056b3;
-} */
-
-.error-message {
-    color: #721c24; /* Dark red for text */
-    background-color: #f8d7da; /* Light pink background */
-    border: 1px solid #f5c6cb; /* Reddish border */
-    padding: 10px 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
-
-.flash-message {
-    padding: 10px 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-}
-
-.flash-success {
-    background-color: #d4edda; /* Light green */
-    color: #155724; /* Dark green */
-    border: 1px solid #c3e6cb;
-}
-
-.flash-error {
-    background-color: #f8d7da; /* Light red */
-    color: #721c24; /* Dark red */
-    border: 1px solid #f5c6cb;
-}
-
-/* Navigation List Styling */
-.navigation-list {
-    list-style: none;
-    padding: 0;
-}
-
-.navigation-list li {
-    margin-bottom: 10px;
-}
-
-.btn-nav {
-    display: block; /* Make the whole area clickable */
-    padding: 12px 18px;
-    background-color: #007bff;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    text-align: center;
-    transition: background-color 0.3s ease;
-}
-
-.btn-nav:hover {
-    background-color: #0056b3;
+textarea:focus {
+    outline: none;
+    border: 2px solid #000;
 }

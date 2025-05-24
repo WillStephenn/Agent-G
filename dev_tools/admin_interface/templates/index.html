@@ -8,13 +8,12 @@
 </head>
 <body>
     <div class="container">
-        <h1>Agent-G Admin Interface</h1>
-        <p>Welcome to the administration panel for Agent-G. Please select a section to manage:</p>
+        <h1>Agent-G Control Panel</h1>
+        <p>Select an option from the menu below:</p>
         <ul class="navigation-list">
             <li><a href="{{ url_for('view_system_prompt') }}" class="btn-nav">View System Prompt</a></li>
             <li><a href="{{ url_for('edit_system_prompt') }}" class="btn-nav">Edit System Prompt</a></li>
             <li><a href="{{ url_for('list_notebooks') }}" class="btn-nav">Manage Notebook Context</a></li>
-            <!-- Add more links here as features are added -->
         </ul>
     </div>
 </body>

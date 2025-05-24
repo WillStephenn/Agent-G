@@ -238,7 +238,6 @@ The project will adhere to the following directory structure to maintain clarity
     *   The web application should be run locally and not exposed to the internet to maintain security.
 
 ## Instructions for Co-Pilot:
-Copilot Instructions
 
 Always include docstrings for functions and methods.
 Docstrings should contain:
