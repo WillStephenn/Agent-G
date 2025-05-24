@@ -162,6 +162,55 @@ def view_notebook_route(filename: str) -> str:
         # Optionally, render the error on the same page or redirect
         return render_template('view_notebook.html', filename=filename, content=f"Error: {str(e)}", error=True)
 
+@app.route('/notebooks/<filename>/edit', methods=['GET', 'POST'])
+def edit_notebook_route(filename: str) -> str:
+    """Handles editing and saving a specific notebook file.
+
+    GET: Displays a form pre-filled with the current decrypted notebook content.
+    POST: Saves the submitted notebook content after encrypting it.
+
+    Args:
+        filename (str): The name of the notebook file to edit. It should be
+                        a secure filename.
+
+    Returns:
+        str: Rendered HTML page. On POST success, redirects to view_notebook.
+             On error, re-renders the edit page with an error message.
+    """
+    secure_file = secure_filename(filename)
+    file_path = os.path.join(NOTEBOOK_CONTEXT_DIR, secure_file)
+    
+    if request.method == 'POST':
+        new_content = request.form['notebook_content']
+        try:
+            encrypted_new_content = encrypt_data(new_content.encode('utf-8'))
+            with open(file_path, 'wb') as f:
+                f.write(encrypted_new_content)
+            flash(f"Notebook '{filename}' updated successfully.", "success")
+            return redirect(url_for('view_notebook_route', filename=filename))
+        except Exception as e:
+            flash(f"Error saving notebook: {str(e)}", "error")
+            return render_template(
+                'edit_notebook.html', 
+                filename=filename,
+                current_content=new_content, 
+                error_message=f"Error saving notebook: {str(e)}"
+            )
+
+    # GET request logic
+    try:
+        with open(file_path, 'rb') as f:
+            encrypted_content = f.read()
+        decrypted_content_bytes = decrypt_data(encrypted_content)
+        decrypted_content = decrypted_content_bytes.decode('utf-8')
+        return render_template('edit_notebook.html', filename=filename, current_content=decrypted_content)
+    except FileNotFoundError:
+        flash(f"Notebook file '{filename}' not found. Cannot edit.", "error")
+        return redirect(url_for('list_notebooks'))
+    except Exception as e:
+        flash(f"ERROR: Could not decrypt or read notebook '{filename}': {str(e)}", "error")
+        return render_template('edit_notebook.html', filename=filename, current_content="", error_message=f"ERROR: Could not decrypt or read notebook '{filename}': {str(e)}")
+
 if __name__ == '__main__':
     # Note: Debug mode should be False in a production environment or if exposed.
     # For local development, True is acceptable.

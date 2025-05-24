@@ -54,8 +54,8 @@ This list tracks discrepancies between the project specification and the current
 - [ ] Implement **Notebook Context Management** (Web UI):
     - [x] Page/section to list encrypted files in `agent_cli/notebook_context/`.
     - [x] Page/section to select a file and view its decrypted content.
-    - [ ] Page/section with a form to edit a selected file's content and save back, re-encrypting.
-    - [ ] (Optional) Page/section to upload a new plain text file, encrypt it, and add it to `agent_cli/notebook_context/`.
+    - [x] Page/section with a form to edit a selected file's content and save back, re-encrypting.
+    - [ ] Add a 'New File' button to /notebooks. Use the same editing interface, just have it spin up a new file , encrypt it, and add it to `agent_cli/notebook_context/`.
 - [ ] Implement **User Profile Management** (Web UI):
     - [ ] Page/section to list encrypted user profiles in `agent_cli/user_profiles/`.
     - [ ] Page/section to select a profile and view its decrypted JSON content (pretty-printed).
