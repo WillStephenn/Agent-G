@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Notebook: {{ filename }} - Agent-G Admin</title>
+    <title>{% if is_new %}Create New Notebook{% else %}Edit Notebook: {{ filename }}{% endif %} - Agent-G Admin</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Edit Notebook: {{ filename }}</h1>
+        <h1>{% if is_new %}Create New Notebook{% else %}Edit Notebook: {{ filename }}{% endif %}</h1>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
@@ -22,13 +22,21 @@
         {% endif %}
         
         <form method="POST">
+            {% if is_new %}
+            <div class="form-group">
+                <label for="filename">Filename (e.g., MyNotes.txt.enc):</label>
+                <input type="text" id="filename" name="filename" value="{{ filename }}" required>
+            </div>
+            {% endif %}
             <div class="form-group">
                 <label for="notebook_content">Notebook Content:</label>
                 <textarea id="notebook_content" name="notebook_content" rows="20">{{ current_content }}</textarea>
             </div>
-            <button type="submit" class="btn">Save Changes</button>
+            <button type="submit" class="btn">{% if is_new %}Create and Save Notebook{% else %}Save Changes{% endif %}</button>
         </form>
+        {% if not is_new %}
         <a href="{{ url_for('view_notebook_route', filename=filename) }}" class="btn-secondary">Cancel and View Notebook</a>
+        {% endif %}
         <a href="{{ url_for('list_notebooks') }}" class="btn-secondary">Back to Notebook List</a>
         <a href="{{ url_for('index') }}" class="btn-secondary">Back to Home</a>
     </div>

@@ -211,6 +211,54 @@ def edit_notebook_route(filename: str) -> str:
         flash(f"ERROR: Could not decrypt or read notebook '{filename}': {str(e)}", "error")
         return render_template('edit_notebook.html', filename=filename, current_content="", error_message=f"ERROR: Could not decrypt or read notebook '{filename}': {str(e)}")
 
+@app.route('/notebooks/new', methods=['GET', 'POST'])
+def new_notebook_route() -> str:
+    """Handles creating a new notebook file.
+
+    GET: Displays a form for entering the new notebook filename and content.
+    POST: Creates the new notebook file, encrypts the content, and saves it.
+    """
+    if request.method == 'POST':
+        filename = request.form.get('filename')
+        content = request.form.get('notebook_content', '') # Default to empty string if not provided
+
+        if not filename:
+            flash("Filename is required.", "error")
+            return render_template('edit_notebook.html', filename="", current_content=content, error_message="Filename is required.", is_new=True)
+
+        # Basic validation for filename (e.g., no slashes, has .txt.enc)
+        if '/' in filename or '\\\\' in filename:
+            flash("Filename cannot contain slashes.", "error")
+            return render_template('edit_notebook.html', filename=filename, current_content=content, error_message="Filename cannot contain slashes.", is_new=True)
+        
+        if not filename.endswith(".txt.enc"):
+            filename += ".txt.enc"
+            
+        secure_file = secure_filename(filename)
+        file_path = os.path.join(NOTEBOOK_CONTEXT_DIR, secure_file)
+
+        if os.path.exists(file_path):
+            flash(f"A notebook with the name '{secure_file}' already exists. Please choose a different name.", "error")
+            return render_template('edit_notebook.html', filename=filename, current_content=content, error_message=f"File '{secure_file}' already exists.", is_new=True)
+
+        try:
+            encrypted_content = encrypt_data(content.encode('utf-8'))
+            with open(file_path, 'wb') as f:
+                f.write(encrypted_content)
+            flash(f"Notebook '{secure_file}' created successfully.", "success")
+            return redirect(url_for('view_notebook_route', filename=secure_file))
+        except Exception as e:
+            flash(f"Error creating notebook: {str(e)}", "error")
+            # Pass is_new=True to ensure the template renders correctly for a new file scenario
+            return render_template('edit_notebook.html', filename=filename, current_content=content, error_message=f"Error creating notebook: {str(e)}", is_new=True)
+
+    # GET request: Show a form to create a new notebook
+    # We can reuse the edit_notebook.html template if we adapt it slightly
+    # or create a new one. For simplicity, let's try to adapt edit_notebook.html
+    # by passing a new flag, e.g., `is_new=True`.
+    return render_template('edit_notebook.html', filename="", current_content="", is_new=True)
+
+
 if __name__ == '__main__':
     # Note: Debug mode should be False in a production environment or if exposed.
     # For local development, True is acceptable.
