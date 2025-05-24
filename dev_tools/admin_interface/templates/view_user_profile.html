@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Profile: {{ filename }} - Agent-G Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>User Profile: {{ filename }}</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if error %}
+            <div class="flash error">
+                <p>{{ content }}</p>
+            </div>
+        {% else %}
+            <h3>Decrypted Content:</h3>
+            <pre class="profile-content">{{ content }}</pre>
+            <p><a href="{{ url_for('edit_user_profile_route', filename=filename) }}" class="btn">Edit Profile</a></p>
+        {% endif %}
+
+        <p><a href="{{ url_for('list_user_profiles') }}" class="btn-secondary">Back to Profile List</a></p>
+        <p><a href="{{ url_for('index') }}" class="btn-secondary">Back to Admin Home</a></p>
+    </div>
+<style>
+pre.profile-content {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    padding: 15px;
+    white-space: pre-wrap;       /* CSS3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+    max-height: 600px;
+    overflow-y: auto;
+}
+</style>
+</body>
+</html>

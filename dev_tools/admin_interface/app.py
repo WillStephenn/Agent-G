@@ -31,6 +31,11 @@ NOTEBOOK_CONTEXT_DIR = os.path.join(os.path.dirname(__file__), '''../../agent_cl
 if not os.path.exists(NOTEBOOK_CONTEXT_DIR):
     os.makedirs(NOTEBOOK_CONTEXT_DIR)
 
+# Configuration for user profiles
+USER_PROFILE_DIR = os.path.join(os.path.dirname(__file__), '''../../agent_cli/user_profiles/''')
+if not os.path.exists(USER_PROFILE_DIR):
+    os.makedirs(USER_PROFILE_DIR)
+
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
@@ -257,6 +262,173 @@ def new_notebook_route() -> str:
     # or create a new one. For simplicity, let's try to adapt edit_notebook.html
     # by passing a new flag, e.g., `is_new=True`.
     return render_template('edit_notebook.html', filename="", current_content="", is_new=True)
+
+
+# --- User Profile Management Routes ---
+
+@app.route('/profiles')
+def list_user_profiles() -> str:
+    """Lists encrypted user profile files from the user_profiles directory.
+
+    Returns:
+        str: Rendered HTML page displaying the list of profile files or an error message.
+    """
+    try:
+        if not os.path.exists(USER_PROFILE_DIR):
+            flash(f"User profile directory not found: {USER_PROFILE_DIR}", "error")
+            return render_template('list_user_profiles.html', profiles=[], user_profile_dir=USER_PROFILE_DIR)
+
+        profiles = [f for f in os.listdir(USER_PROFILE_DIR) if os.path.isfile(os.path.join(USER_PROFILE_DIR, f)) and f.endswith(".json.enc")]
+        return render_template('list_user_profiles.html', profiles=profiles, user_profile_dir=USER_PROFILE_DIR)
+    except Exception as e:
+        flash(f"Error listing user profiles: {str(e)}", "error")
+        return render_template('list_user_profiles.html', profiles=[], user_profile_dir=USER_PROFILE_DIR)
+
+@app.route('/profiles/<filename>')
+def view_user_profile_route(filename: str) -> str:
+    """Displays the decrypted content of a specific user profile file.
+
+    Args:
+        filename (str): The name of the profile file to view.
+
+    Returns:
+        str: Rendered HTML page displaying the profile content, or a redirect on error.
+    """
+    file_path = os.path.join(USER_PROFILE_DIR, secure_filename(filename))
+    try:
+        with open(file_path, 'rb') as f:
+            encrypted_content = f.read()
+        decrypted_content_bytes = decrypt_data(encrypted_content)
+        decrypted_content = decrypted_content_bytes.decode('utf-8')
+        # Attempt to pretty-print JSON for better readability
+        try:
+            import json
+            parsed_json = json.loads(decrypted_content)
+            decrypted_content = json.dumps(parsed_json, indent=4)
+        except json.JSONDecodeError:
+            # If it's not valid JSON, display as is
+            pass
+        return render_template('view_user_profile.html', filename=filename, content=decrypted_content, error=False)
+    except FileNotFoundError:
+        flash(f"User profile file '{filename}' not found.", "error")
+        return redirect(url_for('list_user_profiles'))
+    except Exception as e:
+        app.logger.error(f"Error viewing user profile {filename}: {e}", exc_info=True)
+        flash(f"An error occurred while trying to view user profile '{filename}'. "
+              "This could be due to corrupted content or an encryption key issue. "
+              "Check server logs for details.", "error")
+        return render_template('view_user_profile.html', filename=filename, content=f"Error: {str(e)}", error=True)
+
+@app.route('/profiles/<filename>/edit', methods=['GET', 'POST'])
+def edit_user_profile_route(filename: str) -> str:
+    """Handles editing and saving a specific user profile file.
+
+    GET: Displays a form pre-filled with the current decrypted profile content.
+    POST: Saves the submitted profile content after encrypting it. Validates JSON.
+
+    Args:
+        filename (str): The name of the profile file to edit.
+
+    Returns:
+        str: Rendered HTML page. On POST success, redirects to view_user_profile_route.
+             On error, re-renders the edit page with an error message.
+    """
+    secure_file = secure_filename(filename)
+    file_path = os.path.join(USER_PROFILE_DIR, secure_file)
+    
+    if request.method == 'POST':
+        new_content = request.form['profile_content']
+        try:
+            # Validate JSON before encrypting
+            import json
+            json.loads(new_content) # Will raise an error if not valid JSON
+            
+            encrypted_new_content = encrypt_data(new_content.encode('utf-8'))
+            with open(file_path, 'wb') as f:
+                f.write(encrypted_new_content)
+            flash(f"User profile '{filename}' updated successfully.", "success")
+            return redirect(url_for('view_user_profile_route', filename=filename))
+        except json.JSONDecodeError:
+            flash("Invalid JSON format. Please ensure the content is valid JSON.", "error")
+            return render_template(
+                'edit_user_profile.html', 
+                filename=filename,
+                current_content=new_content, 
+                error_message="Invalid JSON format.",
+                is_new=False
+            )
+        except Exception as e:
+            flash(f"Error saving user profile: {str(e)}", "error")
+            return render_template(
+                'edit_user_profile.html', 
+                filename=filename,
+                current_content=new_content, 
+                error_message=f"Error saving user profile: {str(e)}",
+                is_new=False
+            )
+
+    # GET request logic
+    try:
+        with open(file_path, 'rb') as f:
+            encrypted_content = f.read()
+        decrypted_content_bytes = decrypt_data(encrypted_content)
+        decrypted_content = decrypted_content_bytes.decode('utf-8')
+        return render_template('edit_user_profile.html', filename=filename, current_content=decrypted_content, is_new=False)
+    except FileNotFoundError:
+        flash(f"User profile file '{filename}' not found. Cannot edit.", "error")
+        return redirect(url_for('list_user_profiles'))
+    except Exception as e:
+        flash(f"ERROR: Could not decrypt or read user profile '{filename}': {str(e)}", "error")
+        return render_template('edit_user_profile.html', filename=filename, current_content="", error_message=f"Could not read profile: {str(e)}", is_new=False)
+
+@app.route('/profiles/new', methods=['GET', 'POST'])
+def new_user_profile_route() -> str:
+    """Handles creating a new user profile file.
+
+    GET: Displays a form for entering the new profile filename and content.
+    POST: Creates the new profile file, encrypts the content, and saves it. Validates JSON.
+    """
+    if request.method == 'POST':
+        filename = request.form.get('filename')
+        content = request.form.get('profile_content', '{}') # Default to empty JSON object
+
+        if not filename:
+            flash("Filename is required.", "error")
+            return render_template('edit_user_profile.html', filename="", current_content=content, error_message="Filename is required.", is_new=True)
+
+        if '/' in filename or '\\\\' in filename: # Basic check for directory traversal
+            flash("Filename cannot contain slashes.", "error")
+            return render_template('edit_user_profile.html', filename=filename, current_content=content, error_message="Filename cannot contain slashes.", is_new=True)
+        
+        if not filename.endswith(".json.enc"):
+            filename += ".json.enc"
+            
+        secure_file = secure_filename(filename)
+        file_path = os.path.join(USER_PROFILE_DIR, secure_file)
+
+        if os.path.exists(file_path):
+            flash(f"A user profile with the name '{secure_file}' already exists. Please choose a different name.", "error")
+            return render_template('edit_user_profile.html', filename=filename, current_content=content, error_message=f"File '{secure_file}' already exists.", is_new=True)
+
+        try:
+            # Validate JSON before encrypting
+            import json
+            json.loads(content) # Will raise an error if not valid JSON
+
+            encrypted_content = encrypt_data(content.encode('utf-8'))
+            with open(file_path, 'wb') as f:
+                f.write(encrypted_content)
+            flash(f"User profile '{secure_file}' created successfully.", "success")
+            return redirect(url_for('view_user_profile_route', filename=secure_file))
+        except json.JSONDecodeError:
+            flash("Invalid JSON format. Please ensure the content is valid JSON.", "error")
+            return render_template('edit_user_profile.html', filename=filename, current_content=content, error_message="Invalid JSON format.", is_new=True)
+        except Exception as e:
+            flash(f"Error creating user profile: {str(e)}", "error")
+            return render_template('edit_user_profile.html', filename=filename, current_content=content, error_message=f"Error creating profile: {str(e)}", is_new=True)
+
+    # GET request
+    return render_template('edit_user_profile.html', filename="", current_content='{}', is_new=True) # Default new profile content to empty JSON
 
 
 if __name__ == '__main__':

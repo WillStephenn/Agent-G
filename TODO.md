@@ -48,25 +48,42 @@ This list tracks discrepancies between the project specification and the current
 - [x] Create main web application script (e.g., `dev_tools/admin_interface/app.py` using Flask or Streamlit).
 - [x] Create `templates/` and `static/` directories if using Flask.
 - [x] Add `requirements.txt` for web app dependencies (e.g., `Flask`, `Streamlit`).
-- [ ] Implement **System Prompt Management** (Web UI):
+- [x] Implement **System Prompt Management** (Web UI):
     - [x] Page/section to view decrypted `agent_cli/system_prompt.md.enc`.
     - [x] Page/section with a form to edit content and save back, re-encrypting.
-- [ ] Implement **Notebook Context Management** (Web UI):
+- [x] Implement **Notebook Context Management** (Web UI):
     - [x] Page/section to list encrypted files in `agent_cli/notebook_context/`.
     - [x] Page/section to select a file and view its decrypted content.
     - [x] Page/section with a form to edit a selected file's content and save back, re-encrypting.
     - [x] Add a 'New File' button to /notebooks. Use the same editing interface, just have it spin up a new file , encrypt it, and add it to `agent_cli/notebook_context/`.
-- [ ] Implement **User Profile Management** (Web UI):
-    - [ ] Page/section to list encrypted user profiles in `agent_cli/user_profiles/`.
-    - [ ] Page/section to select a profile and view its decrypted JSON content (pretty-printed).
-    - [ ] Page/section with a form to edit user profile fields (e.g., name, preferred_name, pronouns) and save back, re-encrypting.
-    - [ ] Page/section with a form to add a new user profile (prompt for details, save as encrypted JSON).
-- [ ] Implement **Conversation Log Viewer** (Web UI):
-    - [ ] Page/section to select a user profile.
-    - [ ] Display the conversation history from the selected profile in a readable format.
-- [ ] Ensure the Admin Web App uses `agent_cli.encryption_service` for all encryption/decryption.
-- [ ] Ensure robust error handling and a user-friendly web interface.
-- [ ] Ensure the web application is designed to be run locally and is not exposed to the internet.
+- [x] Implement **User Profile Management** (Web UI):
+    - [x] Page/section to list encrypted user profiles in `agent_cli/user_profiles/`.
+    - [x] Page/section to select a profile and view its decrypted JSON content (pretty-printed).
+    - [x] Page/section with a form to edit user profile fields (e.g., name, preferred_name, pronouns) and save back, re-encrypting.
+    - [x] Create New Profile Button
+- [x] Ensure the Admin Web App uses `agent_cli.encryption_service` for all encryption/decryption.
+- [x] Ensure robust error handling and a user-friendly web interface.
+- [x] Ensure the web application is designed to be run locally and is not exposed to the internet.
+
+### C. Core Agent Logic
+- [ ] **Encryption of initial `system_prompt.md`**:
+    - [ ] Manually create the initial plain text `system_prompt.md`.
+    - [ ] Use the (to-be-created) Admin Web App to encrypt it into `agent_cli/system_prompt.md.enc`.
+- [ ] **Loading decrypted system prompt**:
+    - [ ] Ensure `agent_cli/llm_service.py` (or `agent_cli/data_manager.py`) correctly loads and decrypts `agent_cli/system_prompt.md.enc` for use.
+
+### D. Future Considerations (Longer Term - from Spec)
+- [ ] **WhatsApp Integration (Section 2.5, 5 of Spec):**
+    - [ ] Twilio API setup.
+    - [ ] Flask/FastAPI webhook in `agent_cli`.
+    - [ ] Logic for receiving messages and sending replies via Twilio.
+- [ ] **Hosting Setup (Section 5 of Spec):**
+    - [ ] Prepare `agent_cli` for deployment (e.g., on PythonAnywhere).
+- [ ] **Testing Framework (Section 3, 5 of Spec):**
+    - [ ] Create `tests/` directory.
+    - [ ] Add unit/integration tests for different modules.
+
+This TODO list should provide a good roadmap for aligning the codebase with the specification and implementing the new features.
 
 ### C. Core Agent Logic
 - [ ] **Encryption of initial `system_prompt.md`**:

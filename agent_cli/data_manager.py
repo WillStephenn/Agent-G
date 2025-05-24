@@ -46,6 +46,37 @@ def get_decrypted_system_prompt() -> Optional[str]:
     """
     return _decrypted_system_prompt
 
+# --- User Profile Management ---
+
+def list_available_profiles(profile_dir: str) -> List[str]:
+    """
+    Lists available user profile filenames in the given directory.
+
+    Args:
+        profile_dir (str): The directory to scan for profile files.
+
+    Returns:
+        List[str]: A list of profile filenames ending with .json.enc.
+    """
+    if not os.path.exists(profile_dir):
+        # This case should ideally be handled by directory creation in config.py,
+        # but good to check.
+        print(f"Profile directory does not exist: {profile_dir}")
+        return []
+    if not os.path.isdir(profile_dir):
+        print(f"Profile path is not a directory: {profile_dir}")
+        return []
+    
+    profiles = []
+    try:
+        for filename in os.listdir(profile_dir):
+            if filename.endswith(".json.enc") and os.path.isfile(os.path.join(profile_dir, filename)):
+                profiles.append(filename)
+    except OSError as e:
+        print(f"Error listing profiles in {profile_dir}: {e}")
+        return []
+    return profiles
+
 # --- State Accessors and Mutators ---
 def get_notebook_data() -> List[Dict[str, Any]]:
     """
@@ -202,7 +233,7 @@ def load_user_profile(profile_dir: str, profile_filename: str) -> bool:
     """
     Loads a user profile and initialises conversation history.
 
-    If the specified profile file is not found, a default profile is used.
+    If the specified profile file is not found, a default profile structure is created in memory.
     If `config.CLEAR_HISTORY_ON_STARTUP` is True, the conversation history
     in the loaded profile will be cleared.
     Supports both plain JSON and encrypted ".enc" profile files.
@@ -212,46 +243,65 @@ def load_user_profile(profile_dir: str, profile_filename: str) -> bool:
         profile_filename (str): The name of the profile file (e.g., "user.json" or "user.enc").
 
     Returns:
-        bool: True if a profile (either specified or default) was successfully loaded or initialised.
-              False if there was an error loading the specified profile and a default profile was used as a fallback.
+        bool: True if a profile was successfully loaded or a new one initialised.
+              False if there was a critical error during loading attempt (e.g. decryption error of existing file).
     """
     global _current_user_profile, _conversation_history
     profile_path: str = os.path.join(profile_dir, profile_filename)
+    new_profile_created_in_memory = False
 
     if not os.path.exists(profile_path):
-        print(f"Error: User profile not found: {profile_path}")
+        print(f"Profile '{profile_filename}' not found. A new profile structure will be used and saved upon exit/interaction.")
         _set_current_user_profile({
-            "name": "User", "preferred_name": "User", "pronouns": "they/them", "conversation_history": []
+            "preferred_name": profile_filename.replace(".json.enc", ""), # Default name from filename
+            "pronouns": "they/them",
+            "context": "",
+            "conversation_history": []
         })
         _set_conversation_history([])
-        print("Using a default profile for 'User'.")
-        return True
+        new_profile_created_in_memory = True
+        # Ensure the directory exists for saving later
+        os.makedirs(profile_dir, exist_ok=True)
+        return True # Successfully initialized a new profile in memory
 
     try:
-        is_encrypted = profile_filename.endswith(".enc")
-        if is_encrypted:
-            with open(profile_path, 'rb') as f:
+        if profile_filename.endswith(".enc"):
+            with open(profile_path, "rb") as f:
                 encrypted_data = f.read()
-            decrypted_data_bytes = encryption_service.decrypt_data(encrypted_data)
-            profile_data = json.loads(decrypted_data_bytes.decode('utf-8'))
-        else:
-            with open(profile_path, 'r', encoding='utf-8') as f:
+            decrypted_data = encryption_service.decrypt_data(encrypted_data)
+            profile_data = json.loads(decrypted_data.decode('utf-8'))
+        else: # For plain JSON, if ever used directly (though spec implies .enc)
+            with open(profile_path, "r", encoding='utf-8') as f:
                 profile_data = json.load(f)
         
-        if config.CLEAR_HISTORY_ON_STARTUP:
-            profile_data["conversation_history"] = []
-            print("Conversation history cleared due to CLEAR_HISTORY_ON_STARTUP setting.")
-
         _set_current_user_profile(profile_data)
-        _set_conversation_history(profile_data.get("conversation_history", []))
-        
+        history = profile_data.get("conversation_history", [])
+        if config.CLEAR_HISTORY_ON_STARTUP and not new_profile_created_in_memory:
+            print(f"Clearing conversation history for '{profile_filename}' due to CLEAR_HISTORY_ON_STARTUP setting.")
+            history = []
+            # Update the profile data as well if history is cleared
+            if _current_user_profile:
+                 _current_user_profile["conversation_history"] = []
+        _set_conversation_history(history)
+        print(f"User profile '{profile_filename}' loaded successfully.")
         return True
-    except Exception as e:
-        print(f"Error loading user profile {profile_filename}: {e}")
-        _set_current_user_profile({"name": "User", "preferred_name": "User", "pronouns": "they/them", "conversation_history": []})
+    except FileNotFoundError: # Should be caught by os.path.exists, but as a safeguard
+        print(f"Error: Profile file '{profile_filename}' not found during load attempt (should have been caught). Using default.")
+        _set_current_user_profile({
+            "preferred_name": "User", "pronouns": "they/them", "context": "", "conversation_history": []
+        })
         _set_conversation_history([])
-        print("Using a default profile due to error.")
-        return False
+        return False # Fallback to a very basic default
+    except Exception as e:
+        print(f"Error loading or decrypting user profile '{profile_filename}': {e}. Using a new/default profile structure.")
+        _set_current_user_profile({
+            "preferred_name": profile_filename.replace(".json.enc", " (Error)"), 
+            "pronouns": "they/them", 
+            "context": f"Error loading profile {profile_filename}.", 
+            "conversation_history": []
+        })
+        _set_conversation_history([])
+        return False # Indicate an error occurred, even if we fall back
 
 def save_user_profile(profile_dir: str, profile_filename: str) -> None:
     """

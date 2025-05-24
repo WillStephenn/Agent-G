@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if is_new %}Create New User Profile{% else %}Edit User Profile: {{ filename }}{% endif %} - Agent-G Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>{% if is_new %}Create New User Profile{% else %}Edit User Profile: {{ filename }}{% endif %}</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% if error_message %}
+            <div class="flash error">{{ error_message }}</div>
+        {% endif %}
+        
+        <form method="POST">
+            {% if is_new %}
+            <div class="form-group">
+                <label for="filename">Filename (e.g., user_profile.json.enc):</label>
+                <input type="text" id="filename" name="filename" value="{{ filename }}" required>
+            </div>
+            {% endif %}
+            <div class="form-group">
+                <label for="profile_content">Profile Content (JSON format):</label>
+                <textarea id="profile_content" name="profile_content" rows="20">{{ current_content }}</textarea>
+            </div>
+            <button type="submit" class="btn">{% if is_new %}Create and Save Profile{% else %}Save Changes{% endif %}</button>
+        </form>
+        {% if not is_new %}
+        <a href="{{ url_for('view_user_profile_route', filename=filename) }}" class="btn-secondary">Cancel and View Profile</a>
+        {% endif %}
+        <a href="{{ url_for('list_user_profiles') }}" class="btn-secondary">Back to Profile List</a>
+        <a href="{{ url_for('index') }}" class="btn-secondary">Back to Home</a>
+    </div>
+</body>
+</html>
