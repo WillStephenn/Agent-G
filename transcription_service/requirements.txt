@@ -2,3 +2,4 @@ google-generativeai
 Pillow
 pillow_heif
 python-dotenv
+cryptography

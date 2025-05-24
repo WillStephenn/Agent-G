@@ -6,6 +6,13 @@ from typing import Optional
 # --- Directory Setup ---
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
+ENV_FILE_PATH = os.path.join(SCRIPT_DIR, '.env') # .env file in agent_cli directory
+
+# --- Load .env before other imports that depend on it ---
+load_dotenv(ENV_FILE_PATH)
+
+# --- Now import modules that might use env vars ---
+from .encryption_service import ENCRYPTION_KEY # Import ENCRYPTION_KEY
 
 TRANSCRIPTION_DIR_NAME = "test_transcribed_texts"
 USER_PROFILE_DIR_NAME = "user_profiles"
@@ -17,9 +24,6 @@ USER_PROFILE_DIR = os.path.join(PROJECT_ROOT, USER_PROFILE_DIR_NAME)
 SYSTEM_PROMPT_FILE_PATH = os.path.join(SCRIPT_DIR, SYSTEM_PROMPT_FILENAME)
 
 # --- API Configuration ---
-ENV_FILE_PATH = os.path.join(SCRIPT_DIR, '.env') # .env file in agent_cli directory
-load_dotenv(ENV_FILE_PATH)
-
 API_KEY: Optional[str] = os.getenv("GOOGLE_API_KEY")
 GEMINI_MODEL_NAME = "gemini-2.5-flash-preview-04-17"
 
