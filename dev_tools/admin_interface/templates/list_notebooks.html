@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notebook Files</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+    <h2>Encrypted Notebook Files</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    {% if files %}
+        <ul>
+            {% for file in files %}
+                <li><a href="{{ url_for('view_notebook_route', filename=file) }}">{{ file }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No notebook files found in <code>{{ config.NOTEBOOK_CONTEXT_DIR if config and config.NOTEBOOK_CONTEXT_DIR else 'agent_cli/notebook_context/' }}</code>.</p>
+    {% endif %}
+    <p><a href="{{ url_for('index') }}">Back to Admin Home</a></p>
+    </div>
+</body>
+</html>

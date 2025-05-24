@@ -43,34 +43,35 @@ This list tracks discrepancies between the project specification and the current
     - [x] Save encrypted content to `agent_cli/notebook_context/[filename].txt.enc`.
     - [x] Handle potential errors (file not found, encryption errors).
 
-### B. `dev_tools/admin_interface/` (CLI)
-- [ ] Create `dev_tools/admin_interface/` directory.
-- [ ] Create main CLI script (e.g., `dev_tools/admin_interface/admin_cli.py`).
-- [ ] Add `requirements.txt` if specific dependencies are needed (e.g., `click`, `questionary`).
-- [ ] Implement **System Prompt Management**:
-    - [ ] Option to view decrypted `agent_cli/system_prompt.md.enc`.
-    - [ ] Option to edit content (e.g., in a temporary file or via input) and save back, re-encrypting.
-    - [ ] Option to encrypt an initial plain text system prompt file to `agent_cli/system_prompt.md.enc`.
-- [ ] Implement **Notebook Context Management**:
-    - [ ] Option to list encrypted files in `agent_cli/notebook_context/`.
-    - [ ] Option to select a file and view its decrypted content.
-    - [ ] Option to edit a selected file's content and save back, re-encrypting.
-    - [ ] (Optional) Option to encrypt a new plain text file and add it to `agent_cli/notebook_context/`.
-- [ ] Implement **User Profile Management**:
-    - [ ] Option to list encrypted user profiles in `agent_cli/user_profiles/`.
-    - [ ] Option to select a profile and view its decrypted JSON content (pretty-printed).
-    - [ ] Option to edit user profile fields (e.g., name, preferred_name, pronouns) and save back, re-encrypting.
-    - [ ] Option to add a new user profile (prompt for details, save as encrypted JSON).
-- [ ] Implement **Conversation Log Viewer**:
-    - [ ] Option to select a user profile.
-    - [ ] View the conversation history from the selected profile in a readable format.
-- [ ] Ensure the Admin CLI uses `agent_cli.encryption_service` for all encryption/decryption.
-- [ ] Ensure robust error handling and user-friendly prompts.
+### B. `dev_tools/admin_interface/` (Locally Hosted Web App)
+- [x] Create `dev_tools/admin_interface/` directory.
+- [x] Create main web application script (e.g., `dev_tools/admin_interface/app.py` using Flask or Streamlit).
+- [x] Create `templates/` and `static/` directories if using Flask.
+- [x] Add `requirements.txt` for web app dependencies (e.g., `Flask`, `Streamlit`).
+- [ ] Implement **System Prompt Management** (Web UI):
+    - [x] Page/section to view decrypted `agent_cli/system_prompt.md.enc`.
+    - [x] Page/section with a form to edit content and save back, re-encrypting.
+- [ ] Implement **Notebook Context Management** (Web UI):
+    - [x] Page/section to list encrypted files in `agent_cli/notebook_context/`.
+    - [x] Page/section to select a file and view its decrypted content.
+    - [ ] Page/section with a form to edit a selected file's content and save back, re-encrypting.
+    - [ ] (Optional) Page/section to upload a new plain text file, encrypt it, and add it to `agent_cli/notebook_context/`.
+- [ ] Implement **User Profile Management** (Web UI):
+    - [ ] Page/section to list encrypted user profiles in `agent_cli/user_profiles/`.
+    - [ ] Page/section to select a profile and view its decrypted JSON content (pretty-printed).
+    - [ ] Page/section with a form to edit user profile fields (e.g., name, preferred_name, pronouns) and save back, re-encrypting.
+    - [ ] Page/section with a form to add a new user profile (prompt for details, save as encrypted JSON).
+- [ ] Implement **Conversation Log Viewer** (Web UI):
+    - [ ] Page/section to select a user profile.
+    - [ ] Display the conversation history from the selected profile in a readable format.
+- [ ] Ensure the Admin Web App uses `agent_cli.encryption_service` for all encryption/decryption.
+- [ ] Ensure robust error handling and a user-friendly web interface.
+- [ ] Ensure the web application is designed to be run locally and is not exposed to the internet.
 
 ### C. Core Agent Logic
 - [ ] **Encryption of initial `system_prompt.md`**:
     - [ ] Manually create the initial plain text `system_prompt.md`.
-    - [ ] Use the (to-be-created) Admin CLI to encrypt it into `agent_cli/system_prompt.md.enc`.
+    - [ ] Use the (to-be-created) Admin Web App to encrypt it into `agent_cli/system_prompt.md.enc`.
 - [ ] **Loading decrypted system prompt**:
     - [ ] Ensure `agent_cli/llm_service.py` (or `agent_cli/data_manager.py`) correctly loads and decrypts `agent_cli/system_prompt.md.enc` for use.
 

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent-G Admin Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Agent-G Admin Interface</h1>
+        <p>Welcome to the administration panel for Agent-G. Please select a section to manage:</p>
+        <ul class="navigation-list">
+            <li><a href="{{ url_for('view_system_prompt') }}" class="btn-nav">View System Prompt</a></li>
+            <li><a href="{{ url_for('edit_system_prompt') }}" class="btn-nav">Edit System Prompt</a></li>
+            <li><a href="{{ url_for('list_notebooks') }}" class="btn-nav">Manage Notebook Context</a></li>
+            <!-- Add more links here as features are added -->
+        </ul>
+    </div>
+</body>
+</html>

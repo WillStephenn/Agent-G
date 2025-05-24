@@ -120,12 +120,12 @@ The project will adhere to the following directory structure to maintain clarity
 |   |-- prepare_context.py    # Script to encrypt raw_transcriptions to agent_cli/notebook_context/
 |
 |-- dev_tools/                # Tools for development and maintenance
-|   |-- admin_interface/      # Development Admin UI
+|   |-- admin_interface/      # Development Admin UI (Locally hosted Web Application)
 |   |   |-- __init__.py
 |   |   |-- app.py            # (e.g., Flask/Streamlit app for the admin UI)
 |   |   |-- templates/        # (If web-based admin UI)
 |   |   |-- static/           # (If web-based admin UI)
-|   |   |-- requirements.txt   # Python dependencies for the admin UI
+|   |   |-- requirements.txt  # Python dependencies for the admin UI
 |   |   |-- .env              # (Optional) Admin UI specific config
 |
 |-- tests/                    # (Recommended for future) Unit/integration tests
@@ -151,8 +151,7 @@ The project will adhere to the following directory structure to maintain clarity
     * **Requirements:** Python web app (e.g., Flask) for Twilio webhook.
 * **Key Python Libraries/Frameworks:**
     * `twilio`, `google-generativeai`, `Flask` (or `FastAPI` for `agent_cli` webhook), `requests`, `python-dotenv`, `cryptography`.
-    * `os` (for filename parsing), `re` (for parsing tags if needed).
-    * Potentially `Streamlit` or `Flask` for the `dev_tools/admin_interface`.
+    * `Streamlit` or `Flask` for the `dev_tools/admin_interface`.
 * **Security Measures:**
 * **Sensitive Data Handling:** Notebook sensitive data is never digitised; `<redacted_marker/>` in text + filename context points to physical location. All stored notebook context and user profile data will be encrypted at rest.
 * **WhatsApp Bot Access Control:** Phone number whitelist enforced. Phone numbers will have names and pronouns associated with them (stored in encrypted user profiles in `agent_cli/user_profiles/`) so the agent knows who it is talking to, and their conversation history can be pulled up.
@@ -212,9 +211,9 @@ The project will adhere to the following directory structure to maintain clarity
 
 ## 7. Development Admin Interface
 
-*   **Purpose:** To provide a developer-friendly Command Line Interface (CLI) for managing and inspecting project data during the development and testing phases. This interface is not intended for end-users (family members).
-*   **Location:** `dev_tools/admin_interface/` (likely a Python script or set of scripts).
-*   **Platform:** Command Line Interface (CLI).
+*   **Purpose:** To provide a developer-friendly interface for managing and inspecting project data during the development and testing phases. This interface is not intended for end-users (family members).
+*   **Location:** `dev_tools/admin_interface/`
+*   **Platform:** Locally hosted Web Application (e.g., using Flask or Streamlit).
 *   **Key Features:**
     *   **System Prompt Management:**
         *   View the decrypted content of `agent_cli/system_prompt.md.enc`.
@@ -236,8 +235,7 @@ The project will adhere to the following directory structure to maintain clarity
         *   Display conversations in a readable format.
 *   **Security:**
     *   This tool will need access to the `ENCRYPTION_KEY` (likely from `agent_cli/.env` or its own configured environment) to perform decryption and encryption.
-    *   Access to this tool should be strictly limited to the developer.
-    *   If it's a web application, it should ideally be run locally and not exposed to the internet.
+    *   The web application should be run locally and not exposed to the internet to maintain security.
 
 ## Instructions for Co-Pilot:
 Copilot Instructions
@@ -264,4 +262,4 @@ Build code in a modular way from the start, with smaller already refactored file
 *   If a user request leads to new, clearly defined tasks that align with the project goals and are not yet on the list, you may suggest adding them to `TODO.md` or, if confident, add them directly and inform the user.
 *   When adding items, try to follow the existing structure (Discrepancies & Fixes, New Features, etc.).
 *   Always confirm with the user before making significant additions or structural changes to `TODO.md` beyond simple task completion.
-*   ALWAYS update the TODO.md when completing tasks. 
+*   ALWAYS update the TODO.md when completing tasks.
