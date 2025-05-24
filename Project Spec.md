@@ -226,7 +226,8 @@ The project will adhere to the following directory structure to maintain clarity
         *   Edit the decrypted content and save it back (re-encrypting automatically).
         *   Potentially, allow uploading new plain text files (to `transcription_service/raw_transcriptions/` to follow the pipeline, or directly encrypt and save to `agent_cli/notebook_context/` for quick dev additions).
     *   **User Profile Management:**
-        *   List all user profile files from `agent_cli/user_profiles/` (e.g., `*.json.enc`).
+        *   List all user profile files from `agent_cli/user
+        _profiles/` (e.g., `*.json.enc`).
         *   View decrypted content of a selected user profile.
         *   Edit user profile details (e.g., name, preferred_name, pronouns) and save (re-encrypting).
         *   Add new user profiles (saved as encrypted JSON files).
@@ -244,12 +245,15 @@ Copilot Instructions
 Always include docstrings for functions and methods.
 Docstrings should contain:
 - A brief, one-line description of what the function does.
-- A section detailing each argument (`Args:`), its name, and description.
-- A section detailing the return value (`Returns:`), its type (if applicable), and description.
+- A section detailing each argument (`Args:`), its name, and description. Only include Args if they are not None.
+- A section detailing the return value (`Returns:`), its type, and description. Only include Returns if they are not None.
 Follow the standard docstring format for the language being used (e.g., Python's reST or Google style, JSDoc for JavaScript).
 
 Always include type hints for function and method parameters when writing in Python.
 Always include type hints for function and method return values when writing in Python.
+Never include redundant comments denoting edits made such as "changed this" or "import x".
+
+Always use UK english, not USA english.
 
 Build code in a modular way from the start, with smaller already refactored files rather than monolithic files.
 
@@ -260,3 +264,4 @@ Build code in a modular way from the start, with smaller already refactored file
 *   If a user request leads to new, clearly defined tasks that align with the project goals and are not yet on the list, you may suggest adding them to `TODO.md` or, if confident, add them directly and inform the user.
 *   When adding items, try to follow the existing structure (Discrepancies & Fixes, New Features, etc.).
 *   Always confirm with the user before making significant additions or structural changes to `TODO.md` beyond simple task completion.
+*   ALWAYS update the TODO.md when completing tasks. 

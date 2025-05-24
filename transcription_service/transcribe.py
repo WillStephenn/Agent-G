@@ -7,29 +7,24 @@ import re
 
 pillow_heif.register_heif_opener()
 
-# Load environment variables from .env file
 dotenv.load_dotenv()
 
-# Configure the Gemini API
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     print("Error: GEMINI_API_KEY not found in .env.")
     exit()
 genai.configure(api_key=GEMINI_API_KEY)
 
-# Define the Gemini model and config to be used
 TRANSCRIPTION_TEMPERATURE = 0.7
 transcription_model = genai.GenerativeModel(
     "gemini-2.5-flash-preview-04-17",
     generation_config=genai.types.GenerationConfig(temperature=TRANSCRIPTION_TEMPERATURE)
 )
 
-# Directories
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PICTURES_DIR = os.path.join(BASE_DIR, "test_pictures")
-TRANSCRIBED_TEXTS_DIR = os.path.join(BASE_DIR, "test_transcribed_texts")
+PICTURES_DIR = os.path.join(BASE_DIR, "pictures")
+TRANSCRIBED_TEXTS_DIR = os.path.join(BASE_DIR, "transcription_service", "raw_transcriptions")
 
-# Ensure output directory exists
 os.makedirs(TRANSCRIBED_TEXTS_DIR, exist_ok=True)
 
 TRANSCRIPTION_PROMPT = """Your task is to transcribe the handwritten text from the provided image.
@@ -47,8 +42,7 @@ Follow these specific instructions carefully:
 """
 
 def sanitise_filename_component(name_part: str) -> str:
-    """
-    Removes problematic characters for filenames, including brackets.
+    """Removes problematic characters for filenames, including brackets.
 
     Args:
         name_part (str): The string to sanitise.
@@ -59,15 +53,12 @@ def sanitise_filename_component(name_part: str) -> str:
     return str(re.sub(r'[\\/*?:"<>|\[\]]', "", name_part))
 
 def transcribe_image(image_path: str, transcribed_texts_dir: str = TRANSCRIBED_TEXTS_DIR) -> None:
-    """
-    Transcribes a single image using Gemini API and saves the result.
+    """Transcribes a single image using Gemini API and saves the result.
 
     Args:
         image_path (str): The absolute path to the image file.
-        transcribed_texts_dir (str): Directory to save the transcription. Defaults to TRANSCRIBED_TEXTS_DIR.
-
-    Returns:
-        None
+        transcribed_texts_dir (str): Directory to save the transcription.
+            Defaults to TRANSCRIBED_TEXTS_DIR.
     """
     try:
         print(f"Processing image: {image_path}...")
@@ -80,31 +71,26 @@ def transcribe_image(image_path: str, transcribed_texts_dir: str = TRANSCRIBED_T
         return
 
     try:
-        # Extract NotebookIdentifier and PageNumber from the image filename
-        # Expected format: BlueNotebook_Page023.jpg
         filename = os.path.basename(image_path)
-        name_part, _ = os.path.splitext(filename) # Remove extension
+        name_part, _ = os.path.splitext(filename)
         
         parts = name_part.split('_Page')
         if len(parts) != 2:
             print(f"Warning: Could not parse NotebookIdentifier and PageNumber from filename: {filename}. Skipping.")
             return
 
-        # Clean notebook_identifier and page_number_str using sanitise_filename_component
         notebook_identifier = sanitise_filename_component(parts[0])
         page_number_str = sanitise_filename_component(parts[1])
 
-        # Validate notebook_identifier and page_number_str
         if not notebook_identifier or not page_number_str.isdigit():
             print(f"Warning: Invalid NotebookIdentifier or PageNumber from filename: {filename} (Parsed: '{notebook_identifier}', '{page_number_str}'). Skipping.")
             return
             
-        page_number = int(page_number_str) # Keep as int for now, format later
+        page_number = int(page_number_str)
 
-        # Generate response from Gemini
         print(f"  Sending to Gemini for transcription...")
         response = transcription_model.generate_content([TRANSCRIPTION_PROMPT, img], stream=False)
-        response.resolve() # Ensure the response is fully available
+        response.resolve()
 
         if not response.candidates or not response.candidates[0].content.parts:
             print(f"  Error: No content returned from Gemini for {filename}.")
@@ -112,8 +98,6 @@ def transcribe_image(image_path: str, transcribed_texts_dir: str = TRANSCRIBED_T
             
         transcribed_text = response.text.strip()
 
-        # Output filename convention: [NotebookIdentifier]___[PageNumber].txt
-        # Zero-padding page numbers for consistent sorting (e.g., Page023)
         output_filename = f"{notebook_identifier}___Page{page_number:03d}.txt"
         output_filepath = os.path.join(transcribed_texts_dir, output_filename)
 
@@ -125,15 +109,13 @@ def transcribe_image(image_path: str, transcribed_texts_dir: str = TRANSCRIBED_T
         print(f"  An error occurred during transcription or saving for {image_path}: {e}")
 
 def process_images(pictures_dir: str = PICTURES_DIR, transcribed_texts_dir: str = TRANSCRIBED_TEXTS_DIR) -> None:
-    """
-    Processes all images in the specified directory, transcribes them, and saves the results.
+    """Processes all images in the specified directory, transcribes them, and saves the results.
 
     Args:
-        pictures_dir (str): Directory containing images to transcribe. Defaults to PICTURES_DIR.
-        transcribed_texts_dir (str): Directory to save transcriptions. Defaults to TRANSCRIBED_TEXTS_DIR.
-
-    Returns:
-        None
+        pictures_dir (str): Directory containing images to transcribe.
+            Defaults to PICTURES_DIR.
+        transcribed_texts_dir (str): Directory to save transcriptions.
+            Defaults to TRANSCRIBED_TEXTS_DIR.
     """
     print("Starting transcription process...")
     print(f"Looking for images in: {pictures_dir}")
@@ -156,19 +138,13 @@ def process_images(pictures_dir: str = PICTURES_DIR, transcribed_texts_dir: str 
         print(f"Transcription process completed. Processed {processed_files} image(s).")
 
 def main() -> None:
-    """
-    Main function to orchestrate the transcription process.
+    """Main function to orchestrate the transcription process.
 
-    Reads images from the PICTURES_DIR, transcribes them using transcribe_image,
-    and saves the transcriptions to TRANSCRIBED_TEXTS_DIR.
-
-    Args:
-        None
-
-    Returns:
-        None
+    Reads images from the `PICTURES_DIR`, transcribes them using `transcribe_image`,
+    and saves the transcriptions to `TRANSCRIBED_TEXTS_DIR`.
     """
     process_images()
 
 if __name__ == "__main__":
     main()
+

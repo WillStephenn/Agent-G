@@ -6,36 +6,38 @@ from typing import Optional
 # --- Directory Setup ---
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
-ENV_FILE_PATH = os.path.join(SCRIPT_DIR, '.env') # .env file in agent_cli directory
 
-# --- Load .env before other imports that depend on it ---
-load_dotenv(ENV_FILE_PATH)
-
-# --- Now import modules that might use env vars ---
-from .encryption_service import ENCRYPTION_KEY # Import ENCRYPTION_KEY
-
-TRANSCRIPTION_DIR_NAME = "test_transcribed_texts"
+TRANSCRIPTION_DIR_NAME = "notebook_context"
 USER_PROFILE_DIR_NAME = "user_profiles"
-DEFAULT_USER_PROFILE_FILENAME = "test_user.json"
-SYSTEM_PROMPT_FILENAME = "system_prompt.md"
+DEFAULT_USER_PROFILE_FILENAME = "test_user.json.enc"
+SYSTEM_PROMPT_FILENAME = "system_prompt.md.enc"
 
-TRANSCRIPTION_DIR = os.path.join(PROJECT_ROOT, TRANSCRIPTION_DIR_NAME)
-USER_PROFILE_DIR = os.path.join(PROJECT_ROOT, USER_PROFILE_DIR_NAME)
+# Corrected path for agent's notebook context
+TRANSCRIPTION_DIR = os.path.join(SCRIPT_DIR, TRANSCRIPTION_DIR_NAME)
+USER_PROFILE_DIR = os.path.join(SCRIPT_DIR, USER_PROFILE_DIR_NAME)
 SYSTEM_PROMPT_FILE_PATH = os.path.join(SCRIPT_DIR, SYSTEM_PROMPT_FILENAME)
 
 # --- API Configuration ---
+ENV_FILE_PATH = os.path.join(SCRIPT_DIR, '.env')
+load_dotenv(ENV_FILE_PATH)
+
 API_KEY: Optional[str] = os.getenv("GOOGLE_API_KEY")
 GEMINI_MODEL_NAME = "gemini-2.5-flash-preview-04-17"
 
-# --- Behavior Configuration ---
-# To clear history on startup, set AGENT_G_CLEAR_HISTORY=true in your environment or .env file
+# --- Behaviour Configuration ---
 CLEAR_HISTORY_ON_STARTUP_STR = os.getenv("AGENT_G_CLEAR_HISTORY", "false").lower()
 CLEAR_HISTORY_ON_STARTUP = CLEAR_HISTORY_ON_STARTUP_STR == "true"
 
 # Ensure the user_profiles directory exists
 os.makedirs(USER_PROFILE_DIR, exist_ok=True)
 
-def configure_gemini_api():
+def configure_gemini_api() -> None:
+    """Configures the Gemini API with the provided API key.
+
+    This function checks for the GOOGLE_API_KEY environment variable and uses it
+    to configure the `google.generativeai` library. It prints status messages
+    and exits if configuration fails or the key is missing.
+    """
     if not API_KEY:
         print("Error: GOOGLE_API_KEY not found. Please set it in your .env file or environment.")
         exit(1)

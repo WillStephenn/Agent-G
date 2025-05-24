@@ -95,14 +95,20 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+.env*
+!.env.example
 .venv
 env/
 
-# Agent-G specific ignores
-agent_cli/system_prompt.md
-user_profiles/*
-!user_profiles/test_user.json
+# Agent-G specific
+agent_cli/.env
+*.json.enc
+agent_cli/system_prompt.md.enc
+agent_cli/notebook_context/*.txt.enc
+agent_cli/user_profiles/
+transcription_service/raw_transcriptions/
+pictures/
+
 
 # Spyder project settings
 .spyderproject
@@ -121,11 +127,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
 .DS_Store
 
-# Copilot Instructions
-Copilot Instructions.md
-
-# User Profiles
-user_profiles/

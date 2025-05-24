@@ -5,45 +5,43 @@ This list tracks discrepancies between the project specification and the current
 ## I. Discrepancies & Fixes
 
 ### A. Directory Structure & File Locations
-- [ ] Rename `test_pictures/` to `pictures/` at the project root.
-- [ ] Create `transcription_service/raw_transcriptions/` directory.
-- [ ] Move contents of `test_transcribed_texts/` to `transcription_service/raw_transcriptions/` and then delete `test_transcribed_texts/`.
-- [ ] Create `agent_cli/notebook_context/` directory.
-- [ ] Move `user_profiles/` (currently at root) to `agent_cli/user_profiles/`.
-- [ ] Encrypt `agent_cli/system_prompt.md` and save it as `agent_cli/system_prompt.md.enc`. (The original plain text can be kept for reference or managed by the admin CLI later).
+- [x] Rename `test_pictures/` to `pictures/` at the project root.
+- [x] Create `transcription_service/raw_transcriptions/` directory.
+- [x] Move contents of `test_transcribed_texts/` to `transcription_service/raw_transcriptions/` and then delete `test_transcribed_texts/`.
+- [x] Create `agent_cli/notebook_context/` directory.
+- [x] Move `user_profiles/` (currently at root) to `agent_cli/user_profiles/`.
+- [x] Encrypt `agent_cli/system_prompt.md` and save it as `agent_cli/system_prompt.md.enc`. (The original plain text can be kept for reference or managed by the admin CLI later).
 
 ### B. Code Updates for New Structure
 - [ ] **`agent_cli/config.py`:**
-    - [ ] Update `TRANSCRIPTION_DIR_NAME` to point to `"notebook_context"`.
-    - [ ] Update `TRANSCRIPTION_DIR` to use the new `TRANSCRIPTION_DIR_NAME`.
-    - [ ] Update `USER_PROFILE_DIR_NAME` to reflect it being inside `agent_cli` (if path construction relies on it, though `USER_PROFILE_DIR` might be correctly absolute). Verify `USER_PROFILE_DIR` points to `agent_cli/user_profiles/`.
-    - [ ] Update `SYSTEM_PROMPT_FILENAME` to `"system_prompt.md.enc"`.
-    - [ ] Ensure `SYSTEM_PROMPT_FILE_PATH` correctly points to `agent_cli/system_prompt.md.enc`.
+    - [x] Update `TRANSCRIPTION_DIR_NAME` to point to `\"notebook_context\"`.
+    - [x] Update `TRANSCRIPTION_DIR` to use the new `TRANSCRIPTION_DIR_NAME`.
+    - [x] Update `USER_PROFILE_DIR_NAME` to reflect it being inside `agent_cli` (if path construction relies on it, though `USER_PROFILE_DIR` might be correctly absolute). Verify `USER_PROFILE_DIR` points to `agent_cli/user_profiles/`.
+    - [x] Update `SYSTEM_PROMPT_FILENAME` to `\"system_prompt.md.enc\"`.
+    - [x] Ensure `SYSTEM_PROMPT_FILE_PATH` correctly points to `agent_cli/system_prompt.md.enc`.
 - [ ] **`agent_cli/data_manager.py`:**
-    - [ ] Modify `load_transcriptions()` to read from `agent_cli/notebook_context/` and expect only `.txt.enc` files, performing decryption.
-    - [ ] Review `save_transcription()`:
-        - This function currently saves to `TRANSCRIPTION_DIR`. If `TRANSCRIPTION_DIR` becomes `agent_cli/notebook_context/`, this function would be saving encrypted files there. Decide if this is for the admin tool or if `prepare_context.py` is the sole writer to `notebook_context`.
-        - If kept, ensure it correctly handles paths and encryption for `agent_cli/notebook_context/`.
-    - [ ] Ensure `load_user_profile()` reads from `agent_cli/user_profiles/`.
-    - [ ] Ensure `save_user_profile()` writes to `agent_cli/user_profiles/`.
-    - [ ] Implement logic to load and decrypt `agent_cli/system_prompt.md.enc` (e.g., a new function `get_decrypted_system_prompt()`).
+    - [x] Modify `load_transcriptions()` to read from `agent_cli/notebook_context/` (using `config.TRANSCRIPTION_DIR`) and expect only `.txt.enc` files, performing decryption using `encryption_service.decrypt_data`.
+    - [x] Remove `save_transcription()`.
+    - [x] Ensure `load_user_profile()` reads from `agent_cli/user_profiles/` (using `config.USER_PROFILE_DIR`) and handles `.json.enc` files by decrypting them.
+    - [x] Ensure `save_user_profile()` writes to `agent_cli/user_profiles/` (using `config.USER_PROFILE_DIR`) and encrypts data if the filename ends with `.enc`.
+    - [x] Implement logic to load and decrypt `agent_cli/system_prompt.md.enc` (new function `get_decrypted_system_prompt()`).
 - [ ] **`agent_cli/llm_service.py`:**
-    - [ ] Update to use the new function from `data_manager.py` to get the decrypted system prompt.
+    - [x] Update to use the new function from `data_manager.py` to get the decrypted system prompt.
 - [ ] **`transcription_service/transcribe.py`:**
-    - [ ] Ensure its output directory is `transcription_service/raw_transcriptions/`.
-    - [ ] Ensure it outputs plain text files as per the spec.
+    - [x] Ensure its output directory is `transcription_service/raw_transcriptions/`.
+    - [x] Ensure it outputs plain text files as per the spec.
 
 ## II. New Features Implementation
 
 ### A. `utilities/prepare_context.py` Script
-- [ ] Create `utilities/` directory.
-- [ ] Create `utilities/prepare_context.py`.
-- [ ] Implement logic to:
-    - [ ] Read plain text files from `transcription_service/raw_transcriptions/`.
-    - [ ] Import `encrypt_data` from `agent_cli.encryption_service`.
-    - [ ] Encrypt the content of each file.
-    - [ ] Save encrypted content to `agent_cli/notebook_context/[filename].txt.enc`.
-    - [ ] Handle potential errors (file not found, encryption errors).
+- [x] Create `utilities/` directory.
+- [x] Create `utilities/prepare_context.py`.
+- [x] Implement logic to:
+    - [x] Read plain text files from `transcription_service/raw_transcriptions/`.
+    - [x] Import `encrypt_data` from `agent_cli.encryption_service`.
+    - [x] Encrypt the content of each file.
+    - [x] Save encrypted content to `agent_cli/notebook_context/[filename].txt.enc`.
+    - [x] Handle potential errors (file not found, encryption errors).
 
 ### B. `dev_tools/admin_interface/` (CLI)
 - [ ] Create `dev_tools/admin_interface/` directory.
