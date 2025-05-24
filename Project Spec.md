@@ -131,3 +131,18 @@ To create a WhatsApp-based AI assistant that help the family navigate and unders
 * **Voice Notes:** Explore allowing users to send WhatsApp voice notes, transcribing them to text before sending to Gemini.
 * **Context Updates:** Plan a simple way to update the AI's knowledge base if new non-sensitive information needs to be added.
 * **Error Monitoring/Alerting:** For a more robust system, basic error logging or alerting if the bot goes down.
+
+## Instructions for Co-Pilot:
+Copilot Instructions
+
+Always include docstrings for functions and methods.
+Docstrings should contain:
+- A brief, one-line description of what the function does.
+- A section detailing each argument (`Args:`), its name, and description.
+- A section detailing the return value (`Returns:`), its type (if applicable), and description.
+Follow the standard docstring format for the language being used (e.g., Python's reST or Google style, JSDoc for JavaScript).
+
+Always include type hints for function and method parameters when writing in Python.
+Always include type hints for function and method return values when writing in Python.
+
+Build code in a modular way from the start, with smaller already refactored files rather than monolithic files.
