@@ -1,4 +1,5 @@
-Project Agent-G: A Digital Accsibility Bridge to Unorganised Handwritten Data.
+**Project Agent-G: A Digital Accsibility Bridge to Unorganised Handwritten Data**
+
 Project Agent-G is conceived as a personal AI companion, dedicated to helping the my family, with an initial focus on supporting my Grandma. Its purpose is to support in navigating notebooks containing Information left behind by my Grandpa. Agent-G is voiced as empathetic and understanding, meeting my Grandma where she is already comfortable; in a conversational manner on whatsapp.
 
 Privacy and security are key considerations for this project.
