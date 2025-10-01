@@ -2,6 +2,8 @@
 
 Project Agent-G is conceived as a personal AI companion, inspired by the needs of my family, with an initial focus on supporting my Grandma (hence Agent G). Its purpose is to support in navigating large, handwritten notebooks containing Information left behind by my Grandpa. Agent-G is voiced as empathetic and understanding, meeting my Grandma where she is already comfortable; in a conversational manner.
 
+The project was originally intended to be integrated with WhatsApp, allowing users to text the agent directly—meeting them where they already communicate with friends and family. This natural texting interface would provide the most familiar and accessible experience. The current CLI and admin interface serve as the foundation for this future integration.
+
 Privacy and security are key considerations for this project. The system is built with Python, using Google's Gemini 2.5 Flash model via the Gemini API for its AI capabilities. Gemini 2.5 Flash was chosen for being fast, cost-effective, and falling well within the free tier limits for this use case.
 
 ## Project Structure
