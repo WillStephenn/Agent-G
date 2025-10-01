@@ -2,7 +2,7 @@
 
 Project Agent-G is conceived as a personal AI companion, inspired by the needs of my family, with an initial focus on supporting my Grandma (hence Agent G). Its purpose is to support in navigating large, handwritten notebooks containing Information left behind by my Grandpa. Agent-G is voiced as empathetic and understanding, meeting my Grandma where she is already comfortable; in a conversational manner.
 
-Privacy and security are key considerations for this project.
+Privacy and security are key considerations for this project. The system is built with Python, using Google's Gemini 2.5 Flash model via the Gemini API for its AI capabilities. Gemini 2.5 Flash was chosen for being fast, cost-effective, and falling well within the free tier limits for this use case.
 
 ## Data Pipeline and Workflow
 
@@ -38,7 +38,7 @@ This data pipeline ensures that the information from the notebooks is accurately
 
 ## Admin Interface
 
-The system is built with Python, using Google's Gemini API for its AI capabilities. It's designed to be secure and can be expanded to include more users in the future. A local admin interface, featuring a retro Macintosh System 1-inspired design, is available for developers to manage encrypted data and system settings. The interface runs locally on 127.0.0.1 and provides a clean, minimalist environment with monospaced fonts.
+It's designed to be secure and can be expanded to include more users in the future. A local admin interface, featuring a retro Macintosh System 1-inspired design, is available for developers to manage encrypted data and system settings. The interface runs locally on 127.0.0.1 and provides a clean, minimalist environment with monospaced fonts.
 
 ![Admin Interface Main Page](repo%20documentation%20content/Admin%20Interface%20Main%20Page.png)
 
