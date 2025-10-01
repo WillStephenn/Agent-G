@@ -2,7 +2,7 @@
 '''
 import os
 from typing import Optional
-from .. import encryption_service # Adjusted import for sub-package
+from .. import encryption_service
 
 _decrypted_system_prompt: Optional[str] = None
 
@@ -17,7 +17,7 @@ def load_and_decrypt_system_prompt(filepath: str) -> bool:
     """
     global _decrypted_system_prompt
     try:
-        with open(filepath, 'rb') as f: # Read as bytes for decryption
+        with open(filepath, 'rb') as f:
             encrypted_content: bytes = f.read()
         decrypted_content: bytes = encryption_service.decrypt_data(encrypted_content)
         _decrypted_system_prompt = decrypted_content.decode('utf-8')

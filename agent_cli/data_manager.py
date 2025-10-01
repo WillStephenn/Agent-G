@@ -7,9 +7,9 @@ import re
 from typing import Tuple, List, Dict, Any, Optional
 
 # Import from the new handler modules
-from .handlers import system_prompt_handler # Adjusted import for sub-package
-from .handlers import user_profile_handler # Adjusted import for sub-package
-from .handlers import notebook_handler # Adjusted import for sub-package
+from .handlers import system_prompt_handler
+from .handlers import user_profile_handler
+from .handlers import notebook_handler
 
 # --- System Prompt Loader ---
 def load_and_decrypt_system_prompt(filepath: str) -> bool:

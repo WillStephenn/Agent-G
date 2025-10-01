@@ -4,6 +4,93 @@ Project Agent-G is conceived as a personal AI companion, inspired by the needs o
 
 Privacy and security are key considerations for this project. The system is built with Python, using Google's Gemini 2.5 Flash model via the Gemini API for its AI capabilities. Gemini 2.5 Flash was chosen for being fast, cost-effective, and falling well within the free tier limits for this use case.
 
+## Project Structure
+
+### Architecture Overview
+
+The following diagram illustrates how the different services interact during a typical chat session:
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant CLI
+    participant DataManager
+    participant EncryptionService
+    participant LLMService
+    participant GeminiAPI
+    
+    User->>CLI: Start chat session
+    CLI->>DataManager: Load user profile
+    DataManager->>EncryptionService: Decrypt user profile
+    EncryptionService-->>DataManager: Decrypted profile data
+    CLI->>DataManager: Load notebook context
+    DataManager->>EncryptionService: Decrypt notebook files
+    EncryptionService-->>DataManager: Decrypted notebook content
+    DataManager->>DataManager: Load system prompt
+    DataManager-->>CLI: Context ready
+    
+    User->>CLI: Ask question
+    CLI->>LLMService: Send query with context
+    LLMService->>GeminiAPI: API call with context window
+    GeminiAPI-->>LLMService: Response
+    LLMService-->>CLI: Formatted response
+    CLI-->>User: Display answer
+    
+    CLI->>DataManager: Save conversation history
+    DataManager->>EncryptionService: Encrypt updated profile
+    EncryptionService-->>DataManager: Saved
+```
+
+### Directory Structure
+
+```
+Agent-G/
+├── agent_cli/                      # Core CLI application
+│   ├── cli.py                      # Main CLI entry point
+│   ├── llm_service.py              # Gemini API interaction layer
+│   ├── encryption_service.py      # Fernet encryption/decryption
+│   ├── data_manager.py             # Context and data loading
+│   ├── config.py                   # Configuration and environment variables
+│   ├── system_prompt.md.enc        # Encrypted AI personality/instructions
+│   ├── handlers/                   # Data management handlers
+│   │   ├── user_profile_handler.py
+│   │   ├── notebook_handler.py
+│   │   └── system_prompt_handler.py
+│   ├── notebook_context/           # Encrypted notebook transcriptions
+│   │   └── *.txt.enc
+│   └── user_profiles/              # Encrypted user profile data
+│       └── *.json.enc
+│
+├── dev_tools/
+│   └── admin_interface/            # Flask-based web admin panel
+│       ├── app.py                  # Flask application
+│       ├── templates/              # HTML templates (Macintosh System 1 UI)
+│       └── static/                 # CSS styling
+│
+├── transcription_service/          # Standalone transcription tool
+│   ├── transcribe.py               # Handwriting → digital text via Gemini
+│   └── raw_transcriptions/         # Unencrypted transcription output
+│
+└── utilities/                      # Helper scripts
+    └── prepare_context.py
+```
+
+### Core Components
+
+- **CLI (`cli.py`)**: Interactive terminal interface for conversing with Agent-G. Handles profile selection, session management, and user interaction flow.
+
+- **LLM Service (`llm_service.py`)**: Manages all communication with the Gemini API, including context window construction and response streaming.
+
+- **Encryption Service (`encryption_service.py`)**: Provides Fernet-based symmetric encryption for all sensitive data (profiles, notebooks, system prompts).
+
+- **Data Manager (`data_manager.py`)**: Orchestrates loading and decryption of notebook context, user profiles, and system prompts. Prepares context for the LLM.
+
+- **Handlers**: Specialised modules for creating, reading, updating, and deleting specific data types (user profiles, notebooks, system prompts).
+
+- **Admin Interface (`app.py`)**: Flask web application providing a graphical interface for managing encrypted data without touching the command line.
+
+- **Transcription Service (`transcribe.py`)**: Independent tool that processes images of handwritten notes through Gemini for intelligent transcription with spelling preservation.
+
 ## Data Pipeline and Workflow
 
 The process of making the notebook content accessible involves several steps. First, handwritten pages are photographed. Before this, any sensitive information like passwords or financial details is covered with a "REDACTED" marker. An LLM (Gemini in this case) is then tasked with transcribing these images into digital text. This transcription process also identifies and preserves original spellings from the notebooks and marks the "REDACTED" sections. After a review, this digital text is encrypted and becomes the information base for Agent-G.

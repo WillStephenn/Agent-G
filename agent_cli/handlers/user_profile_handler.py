@@ -3,8 +3,8 @@
 import os
 import json
 from typing import List, Dict, Any, Optional
-from .. import config # Adjusted import for sub-package
-from .. import encryption_service # Adjusted import for sub-package
+from .. import config
+from .. import encryption_service
 
 _current_user_profile: Optional[Dict[str, Any]] = None
 _conversation_history: List[Dict[str, Any]] = []
