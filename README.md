@@ -4,30 +4,6 @@ Project Agent-G is conceived as a personal AI companion, inspired by the needs o
 
 Privacy and security are key considerations for this project.
 
-### Running Agent-G
-
-**CLI Mode:**
-```bash
-cd agent_cli
-python cli.py
-```
-
-**Admin Interface:**
-```bash
-cd dev_tools/admin_interface
-python app.py
-```
-Then navigate to `http://127.0.0.1:5000` in your web browser.
-
-### Initial Setup
-
-1. **Create a system prompt:** Use the admin interface to configure Agent-G's personality and behavior
-2. **Add notebook transcriptions:** Upload encrypted notebook content via the admin interface
-3. **Create user profiles:** Set up profiles for each user who will interact with Agent-G
-4. **Start chatting:** Launch the CLI and select your profile to begin conversing with Agent-G
-
-**Note:** The example images shown in this README are not included in the repository for privacy reasons, but demonstrate the interface you'll see once you set up your own instance.
-
 ## Data Pipeline and Workflow
 
 The process of making the notebook content accessible involves several steps. First, handwritten pages are photographed. Before this, any sensitive information like passwords or financial details is covered with a "REDACTED" marker. An LLM (Gemini in this case) is then tasked with transcribing these images into digital text. This transcription process also identifies and preserves original spellings from the notebooks and marks the "REDACTED" sections. After a review, this digital text is encrypted and becomes the information base for Agent-G.
@@ -139,3 +115,27 @@ Agent-G can be accessed through a command-line interface, providing a conversati
    ```
    ENCRYPTION_KEY=your_base64_encoded_encryption_key_here
    ```
+
+### Running Agent-G
+
+**CLI Mode:**
+```bash
+cd agent_cli
+python cli.py
+```
+
+**Admin Interface:**
+```bash
+cd dev_tools/admin_interface
+python app.py
+```
+Then navigate to `http://127.0.0.1:5000` in your web browser.
+
+### Initial Setup
+
+1. **Create a system prompt:** Use the admin interface to configure Agent-G's personality and behaviour
+2. **Add notebook transcriptions:** Upload encrypted notebook content via the admin interface
+3. **Create user profiles:** Set up profiles for each user who will interact with Agent-G
+4. **Start chatting:** Launch the CLI and select your profile to begin conversing with Agent-G
+
+**Note:** The example images shown in this README are not included in the repository for privacy reasons, but demonstrate the interface you'll see once you set up your own instance.
