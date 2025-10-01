@@ -107,7 +107,8 @@ agent_cli/system_prompt.md.enc
 agent_cli/notebook_context/*.txt.enc
 agent_cli/user_profiles/
 transcription_service/raw_transcriptions/
-pictures/
+pictures/*
+!pictures/[GreenNotebook]_Page[2].jpg
 
 # Spyder project settings
 .spyderproject

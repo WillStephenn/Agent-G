@@ -277,7 +277,7 @@ The transcription service is a standalone tool for converting handwritten notebo
 
 3. **Prepare your images:**
    
-   Place handwritten notebook photos in the `pictures/` directory at the root of the project. The service supports common image formats including HEIF/HEIC (iOS photos).
+   Place handwritten notebook photos in the `pictures/` directory at the root of the project. The service supports common image formats including HEIF/HEIC (iOS photos). An example image (`[GreenNotebook]_Page[2].jpg`) is included in the repository to demonstrate the expected format.
 
 ### Usage
 
