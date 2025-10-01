@@ -248,3 +248,59 @@ Then navigate to `http://127.0.0.1:5000` in your web browser.
 4. **Start chatting:** Launch the CLI and select your profile to begin conversing with Agent-G
 
 **Note:** The example images shown in this README are not included in the repository for privacy reasons, but demonstrate the interface you'll see once you set up your own instance.
+
+## Transcription Service
+
+The transcription service is a standalone tool for converting handwritten notebook images into digital text using Gemini's vision capabilities.
+
+### Setup
+
+1. **Install dependencies:**
+   ```bash
+   cd transcription_service
+   pip install -r requirements.txt
+   ```
+
+2. **Configure environment variables:**
+   
+   Create a `.env` file in the `transcription_service` directory:
+   ```bash
+   touch .env
+   ```
+   
+   Add your Gemini API key:
+   ```
+   GEMINI_API_KEY=your_api_key_here
+   ```
+
+3. **Prepare your images:**
+   
+   Place handwritten notebook photos in the `pictures/` directory at the root of the project. The service supports common image formats including HEIF/HEIC (iOS photos).
+
+### Usage
+
+Run the transcription service:
+```bash
+cd transcription_service
+python transcribe.py
+```
+
+The service will:
+1. Process all images in the `pictures/` directory
+2. Use Gemini 2.5 Flash to intelligently transcribe the handwriting
+3. Correct obvious typos while preserving originals in `<original_text>` tags
+4. Mark any "REDACTED" labels with `<redacted_marker/>` tags
+5. Save raw (unencrypted) transcriptions to `transcription_service/raw_transcriptions/`
+
+### Post-Transcription Workflow
+
+After transcription, you'll need to manually encrypt and move the files:
+
+1. **Review transcriptions:** Check the output files in `raw_transcriptions/` for accuracy
+2. **Edit if needed:** Make any manual corrections to the transcribed text
+3. **Manually encrypt and move:** The transcriptions are saved as plain text. You'll need to encrypt them and move them to `agent_cli/notebook_context/` using the admin interface or by manually encrypting them with the encryption service
+4. **Test:** Verify Agent-G can access the new content through the CLI
+
+**Note:** The transcription service intentionally outputs unencrypted text to allow for review and editing before encryption. This is a security feature—always review transcriptions before encrypting and importing them.
+
+**Tip:** Before photographing notebook pages, cover any sensitive information (passwords, financial details, addresses) with a physical slip marked "REDACTED". The transcription service will preserve these markers for proper handling.
