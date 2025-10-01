@@ -16,6 +16,26 @@ The core of Agent-G's functionality lies in its data pipeline and context manage
 
 This data pipeline ensures that the information from the notebooks is accurately digitised, secured, and then effectively used by the AI to provide helpful and empathetic responses.
 
+### Pipeline Visualisation: From Handwriting to Conversation
+
+**Step 1: Handwritten Note**
+
+![Handwritten Note Example](repo%20documentation%20content/[GreenNotebook]_Page[2].jpg)
+
+*Original handwritten note from the Green Notebook test case, containing instructions about watering roses and the location of feed and a key.*
+
+**Step 2: Transcribed and Corrected Text**
+
+![Transcribed Notebook Example](repo%20documentation%20content/Admin%20Interface%20-%20Green%20Notebook%20Transcribed.png)
+
+*The handwritten text is transcribed by Gemini, with original spellings preserved in `<original_text>` tags. Note how "teed" is corrected to "feed" while maintaining the original for reference.*
+
+**Step 3: Context Loading and Conversational Query**
+
+![Terminal Chat Example](repo%20documentation%20content/Terminal%20Chat%20Example.png)
+
+*The transcribed content is loaded into the LLM's context window. When Isobel asks about the garage key location and watering schedule, Agent-G successfully retrieves the information from Richard's notes, demonstrating the complete pipeline from handwritten text to conversational AI response.*
+
 ## Admin Interface
 
 The system is built with Python, using Google's Gemini API for its AI capabilities. It's designed to be secure and can be expanded to include more users in the future. A local admin interface, featuring a retro Macintosh System 1-inspired design, is available for developers to manage encrypted data and system settings. The interface runs locally on 127.0.0.1 and provides a clean, minimalist environment with monospaced fonts.
