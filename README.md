@@ -240,7 +240,7 @@ Then navigate to `http://127.0.0.1:5000` in your web browser.
 
 ### Initial Setup
 
-1. **Create a system prompt:** Use the admin interface to configure Agent-G's personality and behaviour
+1. **Review the system prompt:** An example system prompt is included in `agent_cli/system_prompt.md.enc`. You can view and customise it using the admin interface to configure Agent-G's personality and behaviour
 2. **Add notebook transcriptions:** Upload encrypted notebook content via the admin interface
 3. **Create user profiles:** Set up profiles for each user who will interact with Agent-G
 4. **Start chatting:** Launch the CLI and select your profile to begin conversing with Agent-G
