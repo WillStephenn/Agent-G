@@ -22,7 +22,7 @@ ENV_FILE_PATH = os.path.join(SCRIPT_DIR, '.env')
 load_dotenv(ENV_FILE_PATH)
 
 API_KEY: Optional[str] = os.getenv("GOOGLE_API_KEY")
-GEMINI_MODEL_NAME = "gemini-2.5-flash-preview-04-17"
+GEMINI_MODEL_NAME = "gemini-2.5-flash"
 
 # --- Behaviour Configuration ---
 CLEAR_HISTORY_ON_STARTUP_STR = os.getenv("AGENT_G_CLEAR_HISTORY", "false").lower()

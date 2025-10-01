@@ -100,6 +100,11 @@ The project will adhere to the following directory structure to maintain clarity
 |   |-- llm_service.py        # Interacts with Gemini API for conversations
 |   |-- data_manager.py       # Loads/saves/manages agent's data
 |   |-- encryption_service.py # Handles encryption/decryption logic
+|   |-- handlers/             # Contains specific data handling modules
+|   |   |-- __init__.py
+|   |   |-- system_prompt_handler.py
+|   |   |-- user_profile_handler.py
+|   |   |-- notebook_handler.py
 |   |-- system_prompt.md.enc  # ENCRYPTED system prompt for the agent
 |   |-- notebook_context/     # ENCRYPTED notebook transcriptions
 |   |-- user_profiles/        # ENCRYPTED user profiles & conversation history
