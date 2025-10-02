@@ -108,7 +108,10 @@ agent_cli/notebook_context/*.txt.enc
 agent_cli/user_profiles/
 transcription_service/raw_transcriptions/
 pictures/*
-!pictures/[GreenNotebook]_Page[2].jpg
+!pictures/[GreenNotebook]_Page[2].HEIC
+Project Spec.md
+TODO.md
+.vscode/
 
 # Spyder project settings
 .spyderproject

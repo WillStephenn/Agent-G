@@ -21,26 +21,36 @@ sequenceDiagram
     participant LLMService
     participant GeminiAPI
     
+    Note over User,GeminiAPI: Startup Phase
     User->>CLI: Start chat session
-    CLI->>DataManager: Load user profile
+    CLI->>DataManager: Load system prompt
+    DataManager->>EncryptionService: Decrypt system prompt
+    EncryptionService-->>DataManager: Decrypted prompt
+    CLI->>DataManager: Select and load user profile
     DataManager->>EncryptionService: Decrypt user profile
     EncryptionService-->>DataManager: Decrypted profile data
     CLI->>DataManager: Load notebook context
     DataManager->>EncryptionService: Decrypt notebook files
     EncryptionService-->>DataManager: Decrypted notebook content
-    DataManager->>DataManager: Load system prompt
-    DataManager-->>CLI: Context ready
+    CLI-->>User: Ready for questions
     
+    Note over User,GeminiAPI: Conversation Phase
     User->>CLI: Ask question
     CLI->>LLMService: Send query with context
-    LLMService->>GeminiAPI: API call with context window
+    LLMService->>DataManager: Get system prompt
+    DataManager-->>LLMService: System prompt text
+    LLMService->>DataManager: Get user profile & history
+    DataManager-->>LLMService: User context & conversation
+    LLMService->>DataManager: Get notebook content
+    DataManager-->>LLMService: Transcribed text
+    LLMService->>GeminiAPI: API call with full context
     GeminiAPI-->>LLMService: Response
     LLMService-->>CLI: Formatted response
     CLI-->>User: Display answer
-    
-    CLI->>DataManager: Save conversation history
+    CLI->>DataManager: Add to conversation history
+    CLI->>DataManager: Save updated profile
     DataManager->>EncryptionService: Encrypt updated profile
-    EncryptionService-->>DataManager: Saved
+    EncryptionService-->>DataManager: Encrypted data written
 ```
 
 ### Directory Structure
